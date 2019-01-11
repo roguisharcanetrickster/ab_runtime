@@ -1,0 +1,12 @@
+version: "3.2"
+services:
+  apiSails:
+    image: skipdaddy/ab-api-sails:master
+    ports:
+      - "1337:1337"
+    volumes:
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+
+
