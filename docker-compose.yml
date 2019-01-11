@@ -1,5 +1,29 @@
 version: "3.2"
 services:
+  #nginx setup
+  web:
+    image: nginx
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: ./nginx/html
+        target: /usr/share/nginx/html
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+      - type: bind
+        source: ./nginx/default.conf
+        target: /etc/nginx/conf.d/default.conf
+      - type: bind
+        source: ./nginx/ssl
+        target: /etc/ssl/certs
+    depends_on:
+      - apiSails
+  #/nginx
+
+  #apiSails: our API end point
   apiSails:
     image: skipdaddy/ab-api-sails:master
     ports:
@@ -8,5 +32,5 @@ services:
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
-
+  #/apiSails
 

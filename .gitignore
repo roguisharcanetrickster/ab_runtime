@@ -9,8 +9,7 @@
 
 node_modules
 services
-
-
+nginx/ssl
 
 ################################################
 # Miscellaneous
