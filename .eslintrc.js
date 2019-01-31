@@ -20,6 +20,7 @@ module.exports = {
         // trailingComma: "all"
       }
     ],
+    "no-console": 0, // "off", 
     // eqeqeq: ["error", "always"] // adding some custom ESLint rules
   }
 };
