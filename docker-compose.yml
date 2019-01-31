@@ -19,6 +19,9 @@ services:
       - type: bind
         source: ./nginx/ssl
         target: /etc/ssl/certs
+      - type: bind
+        source: ./assets
+        target: /data/assets
     depends_on:
       - apiSails
   #/nginx
@@ -33,4 +36,3 @@ services:
         source: ./config/local.js
         target: /app/config/local.js
   #/apiSails
-
