@@ -7,5 +7,11 @@
     "prettier": "1.15.3"
   },
   "dependencies": {
+    "ab-utils": "Hiro-Nakamura/ab-utils",
+    "async": "^2.6.1",
+    "shelljs": "^0.8.3"
+  },
+  "scripts": {
+    "ssl": ""
   }
 }

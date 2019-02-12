@@ -36,3 +36,33 @@ services:
         source: ./config/local.js
         target: /app/config/local.js
   #/apiSails
+
+  #bot_manager: our #slack bot service
+  botManager:
+    image: skipdaddy/ab-bot-manager:master
+    ports:
+      - "1338:1338"
+    volumes:
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      # sharing .sock files currently don't work on docker-for-mac:
+      # https://github.com/docker/for-mac/issues/483
+      # For a Mac host, configure config/local.js to hostConnection.tcp
+      # but it doesn't hurt to include the /tmp dir for all platforms.
+     - type: bind
+       source: /tmp
+       target: /tmp
+
+  #/bot_manager
+
+#  #watchtower: monitor and update our running containers
+#  watchtower:
+#    image: v2tec/watchtower
+#    volumes:
+#      # - /var/run/docker.sock:/var/run/docker.sock
+#      - type: bind
+#        source: /var/run/docker.sock
+#        target: /var/run/docker.sock
+#    command: --interval 10 --debug
+#  #/watchtower
