@@ -10,6 +10,8 @@
 node_modules
 services
 nginx/ssl
+developer
+config/local.js
 
 ################################################
 # Miscellaneous
