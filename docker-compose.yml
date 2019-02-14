@@ -50,9 +50,9 @@ services:
       # https://github.com/docker/for-mac/issues/483
       # For a Mac host, configure config/local.js to hostConnection.tcp
       # but it doesn't hurt to include the /tmp dir for all platforms.
-     - type: bind
-       source: /tmp
-       target: /tmp
+      - type: bind
+        source: /tmp
+        target: /tmp
 
   #/bot_manager
 

@@ -121,6 +121,8 @@ function createServer(socket) {
           if (msg == ACCESSTOKEN) {
             stream._sentValidToken = true;
             console.log("... accessToken accepted.");
+          } else {
+            console.log("... accessToken REJECTED!");
           }
         } else {
           // else execute a command:
