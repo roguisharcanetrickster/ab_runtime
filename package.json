@@ -9,9 +9,11 @@
   "dependencies": {
     "ab-utils": "Hiro-Nakamura/ab-utils",
     "async": "^2.6.1",
+    "forever": "^0.15.3",
     "shelljs": "^0.8.3"
   },
   "scripts": {
-    "ssl": ""
+    "ssl": "",
+    "boot": "docker stack deploy -c docker-compose.yml ab & ./node_modules/.bin/forever start app.js"
   }
 }
