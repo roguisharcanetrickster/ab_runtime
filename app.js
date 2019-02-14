@@ -24,7 +24,7 @@ var PORT = "1338";
 var ACCESSTOKEN = "ThereIsN0Sp00n";
 if (
   !config.hostConnection.sharedSock ||
-  !config.hostconnection.sharedSock.path
+  !config.hostConnection.sharedSock.path
 ) {
   isSockConnection = false;
   if (
@@ -39,7 +39,7 @@ if (
   }
 }
 if (isSockConnection) {
-  SOCKETFILE = config.hostconnection.sharedSock.path;
+  SOCKETFILE = config.hostConnection.sharedSock.path;
 } else {
   PORT = config.hostConnection.tcp.port;
   ACCESSTOKEN = config.hostConnection.tcp.accessToken;
