@@ -1,0 +1,93 @@
+version: "3.2"
+services:
+  #nginx setup
+  web:
+    image: nginx
+    ports:
+      - "8080:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: ./nginx/html
+        target: /usr/share/nginx/html
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+      - type: bind
+        source: ./nginx/default.conf
+        target: /etc/nginx/conf.d/default.conf
+      - type: bind
+        source: ./nginx/ssl
+        target: /etc/ssl/certs
+      - type: bind
+        source: ./assets
+        target: /data/assets
+    depends_on:
+      - apiSails
+  #/nginx
+
+  #apiSails: our API end point
+  apiSails:
+    image: node
+    ports:
+      - "1337:1337"
+    volumes:
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      - type: bind
+        source: ./developer/api_sails
+        target: /app
+    working_dir: /app
+    command: npm run dev
+  #/apiSails
+
+  #bot_manager: our #slack bot service
+  botManager:
+    image: node
+    # ports:
+    #   - "1338:1338"
+    volumes:
+      - type: bind
+        source: ./developer/bot_manager
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      # sharing .sock files currently don't work on docker-for-mac:
+      # https://github.com/docker/for-mac/issues/483
+      # For a Mac host, configure config/local.js to hostConnection.tcp
+      # but it doesn't hurt to include the /tmp dir for all platforms.
+      - type: bind
+        source: /tmp
+        target: /tmp
+    working_dir: /app
+    command: npm run dev
+  #/bot_manager
+
+  #notification_email: an smtp email service
+  notificationEmail:
+    image: node
+    ports:
+      - "9229:9229"
+    volumes:
+      - type: bind
+        source: ./developer/notification_email
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+    working_dir: /app
+    command: npm run dev
+  #/notification_email
+
+#  #watchtower: monitor and update our running containers
+#  watchtower:
+#    image: v2tec/watchtower
+#    volumes:
+#      # - /var/run/docker.sock:/var/run/docker.sock
+#      - type: bind
+#        source: /var/run/docker.sock
+#        target: /var/run/docker.sock
+#    command: --interval 10 --debug
+#  #/watchtower
