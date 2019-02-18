@@ -12,6 +12,7 @@ services
 nginx/ssl
 developer
 config/local.js
+docker-compose.*
 
 ################################################
 # Miscellaneous
