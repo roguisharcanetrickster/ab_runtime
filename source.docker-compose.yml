@@ -4,12 +4,15 @@ services:
   web:
     image: nginx
     ports:
-      - "8080:80"
+      - "<%=port%>:80"
       - "443:443"
     volumes:
       - type: bind
         source: ./nginx/html
         target: /usr/share/nginx/html
+      - type: bind
+        source: ./assets
+        target: /data/assets
       - type: bind
         source: ./nginx/nginx.conf
         target: /etc/nginx/nginx.conf
@@ -19,38 +22,27 @@ services:
       - type: bind
         source: ./nginx/ssl
         target: /etc/ssl/certs
-      - type: bind
-        source: ./assets
-        target: /data/assets
     depends_on:
       - apiSails
   #/nginx
 
   #apiSails: our API end point
   apiSails:
-    image: node
+    image: skipdaddy/ab-api-sails:<%=tag%>
     ports:
-      - "1337:1337"
+      # - "9229:9229"
     volumes:
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
-      - type: bind
-        source: ./developer/api_sails
-        target: /app
-    working_dir: /app
-    command: npm run dev
   #/apiSails
 
   #bot_manager: our #slack bot service
   botManager:
-    image: node
-    # ports:
-    #   - "1338:1338"
+    image: skipdaddy/ab-bot-manager:<%=tag%>
+    ports:
+      # - "9229:9229"
     volumes:
-      - type: bind
-        source: ./developer/bot_manager
-        target: /app
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
@@ -61,25 +53,8 @@ services:
       - type: bind
         source: /tmp
         target: /tmp
-    working_dir: /app
-    command: npm run dev
-  #/bot_manager
 
-  #notification_email: an smtp email service
-  notificationEmail:
-    image: node
-    ports:
-      - "9229:9229"
-    volumes:
-      - type: bind
-        source: ./developer/notification_email
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-    working_dir: /app
-    command: npm run dev
-  #/notification_email
+  #/bot_manager
 
 #  #watchtower: monitor and update our running containers
 #  watchtower:
