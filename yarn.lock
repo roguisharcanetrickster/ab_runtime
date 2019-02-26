@@ -82,7 +82,7 @@
 
 ab-utils@Hiro-Nakamura/ab-utils:
   version "0.0.0"
-  resolved "https://codeload.github.com/Hiro-Nakamura/ab-utils/tar.gz/da30586df5f44bcd3b9d61199ab0e4341dece1b7"
+  resolved "https://codeload.github.com/Hiro-Nakamura/ab-utils/tar.gz/e4f42af26f93a896fdd626337d48f3bcb260036e"
   dependencies:
     lodash "^4.17.11"
 
