@@ -23,7 +23,7 @@ services:
         source: ./assets
         target: /data/assets
     depends_on:
-      - apiSails
+      - api_sails
   #/nginx
 
   #db: use Maria DB as our backend DB
@@ -56,8 +56,8 @@ services:
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db
 
-  #apiSails: our API end point
-  apiSails:
+  #api_sails: our API end point
+  api_sails:
     image: node
     # ports:
     #   - "9229:9229"
@@ -73,10 +73,10 @@ services:
         target: /data
     working_dir: /app
     command: npm run dev
-  #/apiSails
+  #/api_sails
 
   #bot_manager: our #slack bot service
-  botManager:
+  bot_manager:
     image: node
     # ports:
     #   - "1338:1338"
@@ -99,10 +99,10 @@ services:
   #/bot_manager
 
   #notification_email: an smtp email service
-  notificationEmail:
+  notification_email:
     image: node
-    ports:
-      - "9229:9229"
+    # ports:
+    #   - "9229:9229"
     volumes:
       - type: bind
         source: ./developer/notification_email
@@ -125,8 +125,8 @@ services:
 #    command: --interval 10 --debug
 #  #/watchtower
 
-  #fileProcessor: A service to manage uploaded files.
-  fileProcessor:
+  #file_processor: A service to manage uploaded files.
+  file_processor:
     image: node
     # ports:
     #   - "9229:9229"
@@ -142,5 +142,5 @@ services:
       - type: bind
         source: ./data
         target: /data
-  #/fileProcessor
+  #/file_processor
 

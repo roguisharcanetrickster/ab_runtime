@@ -23,7 +23,7 @@ services:
         source: ./nginx/ssl
         target: /etc/ssl/certs
     depends_on:
-      - apiSails
+      - api_sails
   #/nginx
 
   #db: use Maria DB as our backend DB
@@ -53,11 +53,11 @@ services:
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db
 
-  #apiSails: our API end point
-  apiSails:
+  #api_sails: our API end point
+  api_sails:
     image: skipdaddy/ab-api-sails:<%=tag%>
-    ports:
-      # - "9229:9229"
+    # ports:
+    #   - "9229:9229"
     volumes:
       - type: bind
         source: ./config/local.js
@@ -65,13 +65,13 @@ services:
       - type: bind
         source: ./data
         target: /data
-  #/apiSails
+  #/api_sails
 
   #bot_manager: our #slack bot service
-  botManager:
+  bot_manager:
     image: skipdaddy/ab-bot-manager:<%=tag%>
-    ports:
-      # - "9229:9229"
+    # ports:
+    #   - "9229:9229"
     volumes:
       - type: bind
         source: ./config/local.js
@@ -83,8 +83,21 @@ services:
       - type: bind
         source: /tmp
         target: /tmp
-
   #/bot_manager
+
+  #notification_email: an smtp email service
+  notification_email:
+    image: skipdaddy/ab-notification-email:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    volumes:
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      # TODO: if we enable passing of file paths for attachments
+      # we'll need to include the common /data directory as well
+  #/notification_email
+
 
 #  #watchtower: monitor and update our running containers
 #  watchtower:
@@ -97,8 +110,8 @@ services:
 #    command: --interval 10 --debug
 #  #/watchtower
 
-  # #fileProcessor: A service to manage uploaded files.
-  # fileProcessor:
+  # #file_processor: A service to manage uploaded files.
+  # file_processor:
   #   image: skipdaddy/ab-file-processor:<%=tag%>
   #   # ports:
   #   #   - "9229:9229"
@@ -109,4 +122,4 @@ services:
   #     - type: bind
   #       source: ./data
   #       target: /data
-  # #/fileProcessor
+  # #/file_processor
