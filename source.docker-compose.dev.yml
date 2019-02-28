@@ -68,8 +68,8 @@ services:
   #notification_email: an smtp email service
   notificationEmail:
     image: node
-    ports:
-      - "9229:9229"
+    # ports:
+    #   - "9229:9229"
     volumes:
       - type: bind
         source: ./developer/notification_email

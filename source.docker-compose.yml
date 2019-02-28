@@ -29,8 +29,8 @@ services:
   #apiSails: our API end point
   apiSails:
     image: skipdaddy/ab-api-sails:<%=tag%>
-    ports:
-      # - "9229:9229"
+    # ports:
+    #   - "9229:9229"
     volumes:
       - type: bind
         source: ./config/local.js
@@ -40,8 +40,8 @@ services:
   #bot_manager: our #slack bot service
   botManager:
     image: skipdaddy/ab-bot-manager:<%=tag%>
-    ports:
-      # - "9229:9229"
+    # ports:
+    #   - "9229:9229"
     volumes:
       - type: bind
         source: ./config/local.js
@@ -53,8 +53,21 @@ services:
       - type: bind
         source: /tmp
         target: /tmp
-
   #/bot_manager
+
+  #notification_email: an smtp email service
+  notificationEmail:
+    image: skipdaddy/ab-notification-email:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    volumes:
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      # TODO: if we enable passing of file paths for attachments
+      # we'll need to include the common /data directory as well
+  #/notification_email
+
 
 #  #watchtower: monitor and update our running containers
 #  watchtower:
