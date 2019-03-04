@@ -38,6 +38,9 @@ services:
       - type: bind
         source: ./developer/api_sails
         target: /app
+      - type: bind
+        source: ./data
+        target: /data
     working_dir: /app
     command: npm run dev
   #/apiSails
@@ -91,3 +94,23 @@ services:
 #        target: /var/run/docker.sock
 #    command: --interval 10 --debug
 #  #/watchtower
+
+  #fileProcessor: A service to manage uploaded files.
+  fileProcessor:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    working_dir: /app
+    command: npm run dev
+    volumes:
+      - type: bind
+        source: ./developer/file_processor
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      - type: bind
+        source: ./data
+        target: /data
+  #/fileProcessor
+

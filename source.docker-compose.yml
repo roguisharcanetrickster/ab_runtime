@@ -35,6 +35,9 @@ services:
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
+      - type: bind
+        source: ./data
+        target: /data
   #/apiSails
 
   #bot_manager: our #slack bot service
@@ -66,3 +69,17 @@ services:
 #        target: /var/run/docker.sock
 #    command: --interval 10 --debug
 #  #/watchtower
+
+  # #fileProcessor: A service to manage uploaded files.
+  # fileProcessor:
+  #   image: skipdaddy/ab-file-processor:<%=tag%>
+  #   # ports:
+  #   #   - "9229:9229"
+  #   volumes:
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /app/config/local.js
+  #     - type: bind
+  #       source: ./data
+  #       target: /data
+  # #/fileProcessor
