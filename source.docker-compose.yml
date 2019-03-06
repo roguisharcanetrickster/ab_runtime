@@ -26,6 +26,28 @@ services:
       - apiSails
   #/nginx
 
+  #db: use Maria DB as our backend DB
+  db:
+    image: mariadb
+    ports:
+      - "<%=portDB%>:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - type: bind
+        source: ./mysql/init
+        target: /docker-entrypoint-initdb.d
+      - type: bind
+        source: ./mysql/data
+        target: /var/lib/mysql
+      - type: bind
+        source: ./mysql/conf.d
+        target: /etc/mysql/conf.d
+      - type: bind
+        source: ./mysql/key
+        target: /key
+  #/db
+
   #apiSails: our API end point
   apiSails:
     image: skipdaddy/ab-api-sails:<%=tag%>

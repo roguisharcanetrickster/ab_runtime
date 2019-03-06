@@ -10,7 +10,8 @@
     "ab-utils": "Hiro-Nakamura/ab-utils",
     "async": "^2.6.1",
     "forever": "^0.15.3",
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "shelljs": "^0.8.3"
   },
   "scripts": {
     "ssl": "",
