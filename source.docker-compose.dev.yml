@@ -28,12 +28,16 @@ services:
 
   #db: use Maria DB as our backend DB
   db:
+    command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
     image: mariadb
     ports:
       - "<%=portDB%>:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
+      - type: bind
+        source: ./mysql/conf.d/my.cfg
+        target: /etc/mysql/conf.d/my.cfg
       - type: bind
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
