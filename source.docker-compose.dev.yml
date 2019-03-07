@@ -28,7 +28,8 @@ services:
 
   #db: use Maria DB as our backend DB
   db:
-    command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
+    # on windows build use this command. clear out mysql/data folder if still not working
+    #command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
     image: mariadb
     ports:
       - "<%=portDB%>:3306"
