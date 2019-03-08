@@ -7,7 +7,7 @@
     "prettier": "1.15.3"
   },
   "dependencies": {
-    "ab-utils": "Hiro-Nakamura/ab-utils",
+    "ab-utils": "Hiro-Nakamura/ab-utils#master",
     "async": "^2.6.1",
     "forever": "^0.15.3",
     "nodemon": "^1.18.10",
