@@ -28,13 +28,11 @@ services:
 
   #db: use Maria DB as our backend DB
   db:
-    # on windows build use this command. clear out mysql/data folder if still not working
-    #command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
     image: mariadb
     ports:
       - "<%=portDB%>:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD_FILE: ./mysql/password
     volumes:
       - type: bind
         source: ./mysql/conf.d/my.cfg
@@ -51,6 +49,8 @@ services:
       - type: bind
         source: ./mysql/key
         target: /key
+    # on windows: use this command. (be sure to clear out mysql/data folder)
+    # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db
 
   #apiSails: our API end point
