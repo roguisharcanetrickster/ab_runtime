@@ -32,7 +32,7 @@ services:
     ports:
       - "<%=portDB%>:3306"
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: ./mysql/password
+      MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
       - type: bind
         source: ./mysql/conf.d/my.cfg
@@ -49,6 +49,9 @@ services:
       - type: bind
         source: ./mysql/key
         target: /key
+      - type: bind
+        source: ./mysql/password
+        target: /secret/password
     # on windows: use this command. (be sure to clear out mysql/data folder)
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db
