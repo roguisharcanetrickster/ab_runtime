@@ -14,6 +14,13 @@ developer
 config/local.js
 docker-compose.*
 
+# Ignore data stored in our shared /data directory
+data/**
+!data/tmp/.gitkeep
+
+mysql/data/**
+!mysql/data/.gitkeep
+
 ################################################
 # Miscellaneous
 #

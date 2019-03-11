@@ -23,11 +23,38 @@ services:
         source: ./nginx/ssl
         target: /etc/ssl/certs
     depends_on:
-      - apiSails
+      - api_sails
   #/nginx
 
-  #apiSails: our API end point
-  apiSails:
+  #db: use Maria DB as our backend DB
+  db:
+    image: mariadb
+    ports:
+      - "<%=portDB%>:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /secret/password
+    volumes:
+      - type: bind
+        source: ./mysql/init
+        target: /docker-entrypoint-initdb.d
+      - type: bind
+        source: ./mysql/data
+        target: /var/lib/mysql
+      - type: bind
+        source: ./mysql/conf.d
+        target: /etc/mysql/conf.d
+      - type: bind
+        source: ./mysql/key
+        target: /key
+      - type: bind
+        source: ./mysql/password
+        target: /secret/password
+    # on windows: use this command. (be sure to clear out mysql/data folder)
+    # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
+  #/db
+
+  #api_sails: our API end point
+  api_sails:
     image: skipdaddy/ab-api-sails:<%=tag%>
     # ports:
     #   - "9229:9229"
@@ -35,10 +62,13 @@ services:
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
-  #/apiSails
+      - type: bind
+        source: ./data
+        target: /data
+  #/api_sails
 
   #bot_manager: our #slack bot service
-  botManager:
+  bot_manager:
     image: skipdaddy/ab-bot-manager:<%=tag%>
     # ports:
     #   - "9229:9229"
@@ -56,7 +86,7 @@ services:
   #/bot_manager
 
   #notification_email: an smtp email service
-  notificationEmail:
+  notification_email:
     image: skipdaddy/ab-notification-email:<%=tag%>
     # ports:
     #   - "9229:9229"
@@ -79,3 +109,17 @@ services:
 #        target: /var/run/docker.sock
 #    command: --interval 10 --debug
 #  #/watchtower
+
+  # #file_processor: A service to manage uploaded files.
+  # file_processor:
+  #   image: skipdaddy/ab-file-processor:<%=tag%>
+  #   # ports:
+  #   #   - "9229:9229"
+  #   volumes:
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /app/config/local.js
+  #     - type: bind
+  #       source: ./data
+  #       target: /data
+  # #/file_processor

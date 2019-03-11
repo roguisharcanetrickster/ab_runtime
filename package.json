@@ -7,14 +7,15 @@
     "prettier": "1.15.3"
   },
   "dependencies": {
-    "ab-utils": "Hiro-Nakamura/ab-utils",
+    "ab-utils": "Hiro-Nakamura/ab-utils#master",
     "async": "^2.6.1",
     "forever": "^0.15.3",
+    "nodemon": "^1.18.10",
     "shelljs": "^0.8.3"
   },
   "scripts": {
     "ssl": "",
     "boot": "docker stack deploy -c docker-compose.yml ab & ./node_modules/.bin/forever start app.js",
-    "dev": "docker-compose -f docker-compose.dev.yml up"
+    "dev": "docker-compose -f docker-compose.dev.yml up & node_modules/.bin/nodemon app.js"
   }
 }
