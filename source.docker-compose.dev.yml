@@ -43,9 +43,9 @@ services:
       - type: bind
         source: ./mysql/data
         target: /var/lib/mysql
-      - type: bind
-        source: ./mysql/conf.d
-        target: /etc/mysql/conf.d
+      # - type: bind
+      #   source: ./mysql/conf.d
+      #   target: /etc/mysql/conf.d
       - type: bind
         source: ./mysql/key
         target: /key
