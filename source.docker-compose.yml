@@ -110,16 +110,16 @@ services:
 #    command: --interval 10 --debug
 #  #/watchtower
 
-  # #file_processor: A service to manage uploaded files.
-  # file_processor:
-  #   image: skipdaddy/ab-file-processor:<%=tag%>
-  #   # ports:
-  #   #   - "9229:9229"
-  #   volumes:
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #     - type: bind
-  #       source: ./data
-  #       target: /data
-  # #/file_processor
+  #file_processor: A service to manage uploaded files.
+  file_processor:
+    image: skipdaddy/ab-file-processor:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    volumes:
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      - type: bind
+        source: ./data
+        target: /data
+  #/file_processor
