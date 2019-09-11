@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "ab-utils": "Hiro-Nakamura/ab-utils#master",
-    "async": "^2.6.1",
-    "forever": "^0.15.3",
-    "nodemon": "^1.18.10",
+    "async": "^3.1.0",
+    "forever": "^1.0.0",
+    "nodemon": "^1.19.2",
     "shelljs": "^0.8.3"
   },
   "scripts": {
