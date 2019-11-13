@@ -1,9 +1,9 @@
 {
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "eslint": "^6.3.0",
-    "eslint-config-prettier": "^6.3.0",
-    "eslint-plugin-prettier": "^3.0.1",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
     "prettier": "^1.18.2"
   },
   "dependencies": {
@@ -16,6 +16,7 @@
   "scripts": {
     "ssl": "",
     "boot": "docker stack deploy -c docker-compose.yml ab & ./node_modules/.bin/forever start app.js",
-    "dev": "docker-compose -f docker-compose.dev.yml up & node_modules/.bin/nodemon app.js"
+    "dev-compose": "docker-compose -f docker-compose.dev.yml up & node_modules/.bin/nodemon app.js",
+    "dev": "node_modules/.bin/nodemon app.js & docker stack deploy -c docker-compose.dev.yml ab"
   }
 }
