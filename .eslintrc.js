@@ -16,8 +16,8 @@ module.exports = {
       // customizing prettier rules (unfortunately not many of them are customizable)
       "error",
       {
-        // singleQuote: true,
-        // trailingComma: "all"
+        "tabWidth": 4,
+        "arrowParens": "always"
       }
     ],
     "no-console": 0, // "off", 
