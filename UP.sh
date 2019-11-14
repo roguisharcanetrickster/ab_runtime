@@ -6,4 +6,4 @@ then
 	File="docker-compose.yml"
 fi
 docker stack deploy -c $File ab
-./logs.sh ab_api_sails
+./logs.js
