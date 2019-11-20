@@ -56,11 +56,25 @@ services:
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db
 
+  #redis: use redis to allow cote services to find each other across a swarm
+  redis:
+    image: redis
+    #ports:
+    #  - 6379:6379
+    volumes:
+      - type: bind
+        source: ./redis/data
+        target: /data
+    command: redis-server --appendonly yes
+  #/redis
+
   #api_sails: our API end point
   api_sails:
     image: node
     # ports:
     #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./config/local.js
@@ -71,6 +85,8 @@ services:
       - type: bind
         source: ./data
         target: /data
+    depends_on:
+      - redis
     working_dir: /app
     command: npm run dev
   #/api_sails
@@ -80,6 +96,8 @@ services:
     image: node
     # ports:
     #   - "1338:1338"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./developer/bot_manager
@@ -94,6 +112,8 @@ services:
       - type: bind
         source: /tmp
         target: /tmp
+    depends_on:
+      - redis
     working_dir: /app
     command: npm run dev
   #/bot_manager
@@ -103,6 +123,8 @@ services:
     image: node
     # ports:
     #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./developer/notification_email
@@ -110,6 +132,8 @@ services:
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
+    depends_on:
+      - redis
     working_dir: /app
     command: npm run dev
   #/notification_email
@@ -131,8 +155,8 @@ services:
     image: node
     # ports:
     #   - "9229:9229"
-    working_dir: /app
-    command: npm run dev
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./developer/file_processor
@@ -143,4 +167,8 @@ services:
       - type: bind
         source: ./data
         target: /data
+    depends_on:
+      - redis
+    working_dir: /app
+    command: npm run dev
   #/file_processor

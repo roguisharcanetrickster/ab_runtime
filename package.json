@@ -10,7 +10,7 @@
     "ab-utils": "Hiro-Nakamura/ab-utils#master",
     "async": "^3.1.0",
     "forever": "^1.0.0",
-    "nodemon": "^1.19.2",
+    "nodemon": "^1.19.4",
     "shelljs": "^0.8.3"
   },
   "scripts": {

@@ -56,11 +56,27 @@ services:
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db
 
+  #redis: use redis to allow cote services to find each other across a swarm
+  redis:
+    image: redis
+    ## NOTE: don't expose the service to the outside for security:
+    ## if you do expose it, then set a password.
+    #ports:
+    #  - 6379:6379
+    volumes:
+      - type: bind
+        source: ./redis/data
+        target: /data
+    command: redis-server --appendonly yes
+  #/redis
+
   #api_sails: our API end point
   api_sails:
     image: skipdaddy/ab-api-sails:<%=tag%>
     # ports:
     #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./config/local.js
@@ -68,6 +84,8 @@ services:
       - type: bind
         source: ./data
         target: /data
+    depends_on:
+      - redis
   #/api_sails
 
   #bot_manager: our #slack bot service
@@ -75,6 +93,8 @@ services:
     image: skipdaddy/ab-bot-manager:<%=tag%>
     # ports:
     #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./config/local.js
@@ -86,6 +106,8 @@ services:
       - type: bind
         source: /tmp
         target: /tmp
+    depends_on:
+      - redis
   #/bot_manager
 
   #notification_email: an smtp email service
@@ -93,12 +115,16 @@ services:
     image: skipdaddy/ab-notification-email:<%=tag%>
     # ports:
     #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
       # TODO: if we enable passing of file paths for attachments
       # we'll need to include the common /data directory as well
+    depends_on:
+      - redis
   #/notification_email
 
 
@@ -118,6 +144,8 @@ services:
     image: skipdaddy/ab-file-processor:<%=tag%>
     # ports:
     #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
         source: ./config/local.js
@@ -125,4 +153,6 @@ services:
       - type: bind
         source: ./data
         target: /data
+    depends_on:
+      - redis
   #/file_processor
