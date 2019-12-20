@@ -35,8 +35,8 @@ services:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
       - type: bind
-        source: ./mysql/conf.d/my.cfg
-        target: /etc/mysql/conf.d/my.cfg
+        source: ./mysql/conf.d/my.cnf
+        target: /etc/mysql/conf.d/my.cnf
       - type: bind
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
