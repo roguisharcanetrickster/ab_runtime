@@ -172,3 +172,24 @@ services:
     working_dir: /app
     command: npm run dev
   #/file_processor
+
+
+  #tenant_manager: (AppBuilder) A service to manage the site's tenants
+  tenant_manager:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/tenant_manager
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+    depends_on:
+      - redis
+    working_dir: /app
+    command: npm run dev
+  #/tenant_manager

@@ -5,7 +5,8 @@ module.exports = {
   },
 
   "parserOptions": {
-    "ecmaVersion": 8
+    "ecmaVersion": 8,
+    "sourceType": "module"
   },
 
   // "parser": "babel-eslint",
@@ -16,8 +17,10 @@ module.exports = {
       // customizing prettier rules (unfortunately not many of them are customizable)
       "error",
       {
-        "tabWidth": 4,
-        "arrowParens": "always"
+        "arrowParens": "always",
+        "endOfLine": "lf",
+        "printWidth": 80,
+        "tabWidth": 3
       }
     ],
     "no-console": 0, // "off", 

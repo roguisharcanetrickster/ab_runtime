@@ -27,6 +27,6 @@ else
 		echo "processes:"
 		docker ps
 		echo ""
-		./logs.sh $Service
+		./logs.js 
 	fi
 fi
