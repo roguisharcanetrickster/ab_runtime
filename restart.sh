@@ -8,7 +8,7 @@ then
 	echo "                [ api_sails, db, etc... ]"
 	echo ""
 else
-	ID_Service=`docker service ls | grep "$Service" | awk '{ print $1 }'`
+	ID_Service=`docker service ls | grep "$Service" | awk '{ print $2 }'`
 	if [ -z "$ID_Service" ]
 	then
 		echo ""
