@@ -4,12 +4,25 @@
 // Connect to the running containers and pipe their logs to the console.
 //
 const async = require("async");
+const os = require("os");
 const shell = require("shelljs");
 const { spawn } = require("child_process");
 
-var resp = shell.exec("docker service ls | grep \"ab_\" | awk '{ print $2 }'");
+var stdout = null;
+if (os.platform() == "win32") {
+    // windows method of gathering the service names:
+    stdout = shell
+        .exec(
+            `for /f "tokens=2" %a in ('docker service ls ^| findstr "ab_" ') do @echo %a`
+        )
+        .stdout.replace(/\r/g, "");
+} else {
+    // common unix method of gathering the service names:
+    stdout = shell.exec(`docker service ls | grep "ab_" | awk '{ print $2 }'`)
+        .stdout;
+}
 
-var allServiceIDs = resp.stdout.split("\n");
+var allServiceIDs = stdout.split("\n");
 
 var allServices = {};
 
