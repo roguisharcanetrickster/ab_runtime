@@ -214,3 +214,24 @@ services:
     working_dir: /app
     command: npm run dev
   #/user_manager
+
+
+  #process_manager: (AppBuilder) a micro service to manage our process tasks
+  process_manager:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/process_manager
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+    depends_on:
+      - redis
+    working_dir: /app
+    command: npm run dev
+  #/process_manager

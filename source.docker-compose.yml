@@ -188,3 +188,19 @@ services:
   #   depends_on:
   #     - redis
   # #/user_manager
+
+
+  # #process_manager: (AppBuilder) a micro service to manage our process tasks
+  # process_manager:
+  #   image: skipdaddy/ab-process-manager:<%=tag%>
+  #   # ports:
+  #   #   - "9229:9229"
+  #   environment:
+  #    - COTE_DISCOVERY_REDIS_HOST=redis
+  #   volumes:
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /app/config/local.js
+  #   depends_on:
+  #     - redis
+  # #/process_manager
