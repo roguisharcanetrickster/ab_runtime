@@ -9,7 +9,8 @@
 
 node_modules
 services
-nginx/ssl
+nginx/ssl/**
+!nginx/ssl/.gitkeep
 developer
 config/local.js
 docker-compose.*
