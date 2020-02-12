@@ -33,7 +33,7 @@ CREATE TABLE `site_tenant` (
   `properties` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `uuid` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
 
 
