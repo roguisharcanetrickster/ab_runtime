@@ -36,7 +36,36 @@ CREATE TABLE `site_tenant` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 
 
+# Dump of table site_user
+# ------------------------------------------------------------
 
+DROP TABLE IF EXISTS `site_user`;
+
+CREATE TABLE `site_user` (
+  `uuid` varchar(255) DEFAULT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  `password` longtext DEFAULT NULL,
+  `salt` varchar(64) DEFAULT NULL,
+  `email` longtext DEFAULT NULL,
+  `isActive` int(11) DEFAULT NULL,
+  `lastLogin` datetime DEFAULT NULL,
+  `failedLogins` int(11) DEFAULT NULL,
+  `languageCode` varchar(25) DEFAULT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uuid` (`uuid`),
+  UNIQUE KEY `email` (`email`) USING HASH
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `site_user` WRITE;
+/*!40000 ALTER TABLE `site_user` DISABLE KEYS */;
+
+# Insert site_user Data #
+
+/*!40000 ALTER TABLE `site_user` ENABLE KEYS */;
+UNLOCK TABLES;
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
