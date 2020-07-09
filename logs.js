@@ -71,7 +71,7 @@ async.eachSeries(
         }
 
         // create a new process for logging the given service id
-        var options = ["service", "logs", "-f", id]; // `docker service logs -f ${id}`;
+        var options = ["service", "logs", "-f", "--tail", "50", id]; // `docker service logs -f ${id}`;
         var logger = spawn("docker", options, {
             // stdio: ["ignore", "ignore", "ignore"]
         });
