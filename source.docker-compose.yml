@@ -204,3 +204,35 @@ services:
   #   depends_on:
   #     - redis
   # #/process_manager
+
+
+  # #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
+  # definition_manager:
+  #   image: skipdaddy/ab-definition-manager:<%=tag%>
+  #   # ports:
+  #   #   - "9229:9229"
+  #   environment:
+  #    - COTE_DISCOVERY_REDIS_HOST=redis
+  #   volumes:
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /app/config/local.js
+  #   depends_on:
+  #     - redis
+  # #/definition_manager
+
+
+  # #appbuilder: (AppBuilder) A multi-tenant award service to process our AppBuilder requests.
+  # appbuilder:
+  #   image: skipdaddy/ab-appbuilder:<%=tag%>
+  #   # ports:
+  #   #   - "9229:9229"
+  #   environment:
+  #    - COTE_DISCOVERY_REDIS_HOST=redis
+  #   volumes:
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /app/config/local.js
+  #   depends_on:
+  #     - redis
+  # #/appbuilder

@@ -71,7 +71,8 @@ services:
   #api_sails: our API end point
   api_sails:
     image: node
-    # ports:
+    ports:
+      - "1337:1337"
     #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
@@ -235,3 +236,45 @@ services:
     working_dir: /app
     command: npm run dev
   #/process_manager
+
+
+  #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
+  definition_manager:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/definition_manager
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+    depends_on:
+      - redis
+    working_dir: /app
+    command: npm run dev
+  #/definition_manager
+
+
+  #appbuilder: (AppBuilder) A multi-tenant award service to process our AppBuilder requests.
+  appbuilder:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/appbuilder
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+    depends_on:
+      - redis
+    working_dir: /app
+    command: npm run dev
+  #/appbuilder
