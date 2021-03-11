@@ -236,3 +236,19 @@ services:
   #   depends_on:
   #     - redis
   # #/appbuilder
+
+
+  # #log_manager: (AppBuilder) A log manager for various AB operations
+  # log_manager:
+  #   image: skipdaddy/ab-log-manager:<%=tag%>
+  #   # ports:
+  #   #   - "9229:9229"
+  #   environment:
+  #    - COTE_DISCOVERY_REDIS_HOST=redis
+  #   volumes:
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /app/config/local.js
+  #   depends_on:
+  #     - redis
+  # #/log_manager

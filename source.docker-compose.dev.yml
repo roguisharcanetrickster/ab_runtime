@@ -278,3 +278,24 @@ services:
     working_dir: /app
     command: npm run dev
   #/appbuilder
+
+
+  #log_manager: (AppBuilder) A log manager for various AB operations
+  log_manager:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/log_manager
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+    depends_on:
+      - redis
+    working_dir: /app
+    command: npm run dev
+  #/log_manager
