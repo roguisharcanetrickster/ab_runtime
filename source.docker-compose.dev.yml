@@ -116,7 +116,7 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/bot_manager
 
   #notification_email: an smtp email service
@@ -136,7 +136,7 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/notification_email
 
 #  #watchtower: monitor and update our running containers
@@ -171,7 +171,7 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/file_processor
 
 
@@ -192,7 +192,7 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/tenant_manager
 
 
@@ -213,7 +213,7 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/user_manager
 
 
@@ -234,29 +234,29 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/process_manager
 
 
-  #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
-  definition_manager:
-    image: node
-    # ports:
-    #   - "9229:9229"
-    environment:
-      - COTE_DISCOVERY_REDIS_HOST=redis
-    volumes:
-      - type: bind
-        source: ./developer/definition_manager
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-    depends_on:
-      - redis
-    working_dir: /app
-    command: npm run dev
-  #/definition_manager
+  # #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
+  # definition_manager:
+  #   image: node
+  #   # ports:
+  #   #   - "9229:9229"
+  #   environment:
+  #     - COTE_DISCOVERY_REDIS_HOST=redis
+  #   volumes:
+  #     - type: bind
+  #       sou#rce: ./developer/definition_manager
+  #       target: /app
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /app/config/local.js
+  #   depends_on:
+  #     - redis
+  #   working_dir: /app
+  #   command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
+  # #/definition_manager
 
 
   #appbuilder: (AppBuilder) A multi-tenant award service to process our AppBuilder requests.
@@ -276,7 +276,7 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/appbuilder
 
 
@@ -297,5 +297,5 @@ services:
     depends_on:
       - redis
     working_dir: /app
-    command: npm run dev
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/log_manager
