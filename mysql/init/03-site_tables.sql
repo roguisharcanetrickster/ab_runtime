@@ -226,23 +226,22 @@ UNLOCK TABLES;
 # file_processor
 #
 
-DROP TABLE IF EXISTS `op_fileupload`;
+DROP TABLE IF EXISTS `SITE_FILE`;
 
-CREATE TABLE `op_fileupload` (
-  `uuid` varchar(255) DEFAULT NULL,
-  `appKey` varchar(255) DEFAULT NULL,
-  `permission` varchar(255) DEFAULT NULL,
-  `file` varchar(255) DEFAULT NULL,
-  `pathFile` varchar(255) DEFAULT NULL,
+CREATE TABLE `SITE_FILE` (
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `properties` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `field` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pathFile` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `file` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `info` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`info`)),
+  `object` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `info` longtext,
-  `uploadedBy` int(11) DEFAULT NULL,
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `createdAt` datetime DEFAULT NULL,
-  `updatedAt` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 

@@ -32,7 +32,7 @@ services:
     ######
     # when there is a problem with : Error: ER_CRASHED_ON_USAGE: Table 'AAAAAA' is marked as crashed and should be repaired
     # this can happen with the alter table algorithm: try the safest(and slowest) COPY
-    # command: ["mysqld", "--alter-algorithm=copy"]
+    command: ["mysqld", "--alter-algorithm=copy"]
   #/db
 
   #redis: use redis to allow cote services to find each other across a swarm
@@ -62,9 +62,7 @@ services:
       - type: bind
         source: ./developer/api_sails
         target: /app
-      - type: bind
-        source: ./data
-        target: /data
+      - files:/data
     depends_on:
       - redis
     working_dir: /app
@@ -144,9 +142,7 @@ services:
       - type: bind
         source: ./config/local.js
         target: /app/config/local.js
-      - type: bind
-        source: ./data
-        target: /data
+      - files:/data
     depends_on:
       - redis
     working_dir: /app
@@ -278,3 +274,7 @@ services:
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/log_manager
+
+
+volumes:
+  files:
