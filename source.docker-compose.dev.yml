@@ -1,4 +1,14 @@
 version: "3.2"
+
+volumes:
+  config:
+  files:
+  mysql_config:
+  mysql_data:
+  mysql_key:
+  mysql_password:
+  redis_data:
+
 services:
 
   #db: use Maria DB as our backend DB
@@ -9,24 +19,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
-      - type: bind
-        source: ./mysql/conf.d/my.cnf
-        target: /etc/mysql/conf.d/my.cnf
-      - type: bind
-        source: ./mysql/init
-        target: /docker-entrypoint-initdb.d
-      - type: bind
-        source: ./mysql/data
-        target: /var/lib/mysql
-      # - type: bind
-      #   source: ./mysql/conf.d
-      #   target: /etc/mysql/conf.d
-      - type: bind
-        source: ./mysql/key
-        target: /key
-      - type: bind
-        source: ./mysql/password
-        target: /secret/password
+      - mysql_config:/etc/mysql/conf.d
+      - mysql_data:/var/lib/mysql
+      - mysql_key:/key
+      - mysql_password:/secret
     # on windows: use this command. (be sure to clear out mysql/data folder)
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
     ######
@@ -35,17 +31,35 @@ services:
     command: ["mysqld", "--alter-algorithm=copy"]
   #/db
 
+
   #redis: use redis to allow cote services to find each other across a swarm
   redis:
     image: redis
     #ports:
     #  - 6379:6379
     volumes:
-      - type: bind
-        source: ./redis/data
-        target: /data
+      - redis_data:/data
     command: redis-server --appendonly yes
   #/redis
+
+
+  #config: simply exists to pull in the config/local.js into our config volume
+  config:
+    image: node
+    # environment:
+    #   - AB_CONFIG_INSTALL=true
+    volumes:
+      - type: bind
+        source: ./developer/config
+        target: /app
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      - config:/config
+    working_dir: /app
+    command: ["node", "app.js"]
+  #/config
+
 
   #api_sails: our API end point
   api_sails:
@@ -57,17 +71,36 @@ services:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-      - type: bind
         source: ./developer/api_sails
         target: /app
+      - config:/app/config
       - files:/data
     depends_on:
       - redis
     working_dir: /app
-    command: node app.js
+    command: [ "node", "--inspect=0.0.0.0:9229", "app_waitMysql.js" ]
   #/api_sails
+
+
+  #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
+  appbuilder:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/appbuilder
+        target: /app
+      - config:/app/config
+    depends_on:
+      - redis
+    working_dir: /app
+    # command: npm run dev  # <-- runs nodemon and auto starts when code changes
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
+  #/appbuilder
+
 
   #bot_manager: our #slack bot service
   bot_manager:
@@ -80,9 +113,7 @@ services:
       - type: bind
         source: ./developer/bot_manager
         target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - config:/app/config
       # sharing .sock files currently don't work on docker-for-mac:
       # https://github.com/docker/for-mac/issues/483
       # For a Mac host, configure config/local.js to hostConnection.tcp
@@ -96,8 +127,9 @@ services:
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/bot_manager
 
-  #notification_email: an smtp email service
-  notification_email:
+
+  #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
+  definition_manager:
     image: node
     # ports:
     #   - "9229:9229"
@@ -105,27 +137,14 @@ services:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
-        source: ./developer/notification_email
+        source: ./developer/definition_manager
         target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - config:/app/config
     depends_on:
       - redis
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
-  #/notification_email
-
-#  #watchtower: monitor and update our running containers
-#  watchtower:
-#    image: v2tec/watchtower
-#    volumes:
-#      # - /var/run/docker.sock:/var/run/docker.sock
-#      - type: bind
-#        source: /var/run/docker.sock
-#        target: /var/run/docker.sock
-#    command: --interval 10 --debug
-#  #/watchtower
+  #/definition_manager
 
 
   #file_processor: A service to manage uploaded files.
@@ -139,15 +158,71 @@ services:
       - type: bind
         source: ./developer/file_processor
         target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - config:/app/config
       - files:/data
     depends_on:
       - redis
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/file_processor
+
+
+  #log_manager: (AppBuilder) A log manager for various AB operations
+  log_manager:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/log_manager
+        target: /app
+      - config:/app/config
+    depends_on:
+      - redis
+    working_dir: /app
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
+  #/log_manager
+  
+
+  #notification_email: an smtp email service
+  notification_email:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/notification_email
+        target: /app
+      - config:/app/config
+    depends_on:
+      - redis
+    working_dir: /app
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
+  #/notification_email
+
+
+  #process_manager: (AppBuilder) a micro service to manage our process tasks
+  process_manager:
+    image: node
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - type: bind
+        source: ./developer/process_manager
+        target: /app
+      - config:/app/config
+    depends_on:
+      - redis
+    working_dir: /app
+    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
+  #/process_manager
+
 
 
   #tenant_manager: (AppBuilder) A service to manage the site's tenants
@@ -161,9 +236,7 @@ services:
       - type: bind
         source: ./developer/tenant_manager
         target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - config:/app/config
     depends_on:
       - redis
     working_dir: /app
@@ -182,9 +255,7 @@ services:
       - type: bind
         source: ./developer/user_manager
         target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - config:/app/config
     depends_on:
       - redis
     working_dir: /app
@@ -192,89 +263,14 @@ services:
   #/user_manager
 
 
-  #process_manager: (AppBuilder) a micro service to manage our process tasks
-  process_manager:
-    image: node
-    # ports:
-    #   - "9229:9229"
-    environment:
-      - COTE_DISCOVERY_REDIS_HOST=redis
-    volumes:
-      - type: bind
-        source: ./developer/process_manager
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-    depends_on:
-      - redis
-    working_dir: /app
-    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
-  #/process_manager
+#  #watchtower: monitor and update our running containers
+#  watchtower:
+#    image: v2tec/watchtower
+#    volumes:
+#      # - /var/run/docker.sock:/var/run/docker.sock
+#      - type: bind
+#        source: /var/run/docker.sock
+#        target: /var/run/docker.sock
+#    command: --interval 10 --debug
+#  #/watchtower
 
-
-  # #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
-  # definition_manager:
-  #   image: node
-  #   # ports:
-  #   #   - "9229:9229"
-  #   environment:
-  #     - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - type: bind
-  #       sou#rce: ./developer/definition_manager
-  #       target: /app
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #   depends_on:
-  #     - redis
-  #   working_dir: /app
-  #   command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
-  # #/definition_manager
-
-
-  #appbuilder: (AppBuilder) A multi-tenant award service to process our AppBuilder requests.
-  appbuilder:
-    image: node
-    # ports:
-    #   - "9229:9229"
-    environment:
-      - COTE_DISCOVERY_REDIS_HOST=redis
-    volumes:
-      - type: bind
-        source: ./developer/appbuilder
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-    depends_on:
-      - redis
-    working_dir: /app
-    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
-  #/appbuilder
-
-
-  #log_manager: (AppBuilder) A log manager for various AB operations
-  log_manager:
-    image: node
-    # ports:
-    #   - "9229:9229"
-    environment:
-      - COTE_DISCOVERY_REDIS_HOST=redis
-    volumes:
-      - type: bind
-        source: ./developer/log_manager
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-    depends_on:
-      - redis
-    working_dir: /app
-    command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
-  #/log_manager
-
-
-volumes:
-  files:

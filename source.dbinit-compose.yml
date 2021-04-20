@@ -1,4 +1,10 @@
 version: "3.2"
+volumes:
+  mysql_config:
+  mysql_data:
+  mysql_key:
+  mysql_password:
+
 services:
   #db: use Maria DB as our backend DB
   db:
@@ -8,24 +14,20 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
-      - type: bind
-        source: ./mysql/conf.d/my.cnf
-        target: /etc/mysql/conf.d/my.cnf
+      #
+      # Pull In our local ./mysql/init files to initialize the DB
+      #
       - type: bind
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
-      - type: bind
-        source: ./mysql/data
-        target: /var/lib/mysql
-      # - type: bind
-      #   source: ./mysql/conf.d
-      #   target: /etc/mysql/conf.d
-      - type: bind
-        source: ./mysql/key
-        target: /key
-      - type: bind
-        source: ./mysql/password
-        target: /secret/password
+      #
+      # Now use our volumes 
+      # (previously configured by config-compose.yml)
+      #
+      - mysql_config:/etc/mysql/conf.d
+      - mysql_data:/var/lib/mysql
+      - mysql_key:/key
+      - mysql_password:/secret
     # on windows: use this command. (be sure to clear out mysql/data folder)
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db
