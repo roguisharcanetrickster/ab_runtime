@@ -54,7 +54,7 @@ services:
         target: /app
       - type: bind
         source: ./config/local.js
-        target: /app/config/local.js
+        target: /config_safe/local.js
       - config:/config
     working_dir: /app
     command: ["node", "app.js"]
@@ -77,6 +77,7 @@ services:
       - files:/data
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app_waitMysql.js" ]
   #/api_sails
@@ -96,6 +97,7 @@ services:
       - config:/app/config
     depends_on:
       - redis
+      - config
     working_dir: /app
     # command: npm run dev  # <-- runs nodemon and auto starts when code changes
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
@@ -123,6 +125,7 @@ services:
         target: /tmp
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/bot_manager
@@ -142,6 +145,7 @@ services:
       - config:/app/config
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/definition_manager
@@ -162,6 +166,7 @@ services:
       - files:/data
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/file_processor
@@ -181,6 +186,7 @@ services:
       - config:/app/config
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/log_manager
@@ -200,6 +206,7 @@ services:
       - config:/app/config
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/notification_email
@@ -219,10 +226,10 @@ services:
       - config:/app/config
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/process_manager
-
 
 
   #tenant_manager: (AppBuilder) A service to manage the site's tenants
@@ -239,6 +246,7 @@ services:
       - config:/app/config
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/tenant_manager
@@ -258,6 +266,7 @@ services:
       - config:/app/config
     depends_on:
       - redis
+      - config
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/user_manager

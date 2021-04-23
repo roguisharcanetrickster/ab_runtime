@@ -23,16 +23,16 @@ services:
       ##
       - type: bind
         source: ./config/local.js
-        target: /app/config/local.js
+        target: /config_safe/local.js
       - type: bind
-        source: ./mysql/conf.d/my.cnf
-        target: /app/mysql/conf.d/my.cnf
+        source: ./mysql/conf.d/my-noencrypt.cnf
+        target: /mysql_config_source/my.cnf
       - type: bind
         source: ./mysql/key
-        target: /app/mysql/key
+        target: /mysql_key_source
       - type: bind
         source: ./mysql/password
-        target: /app/mysql/secret/password
+        target: /mysql_password_source/password
 
       ##
       ## Mount our Volumes to update
