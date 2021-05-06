@@ -542,7 +542,7 @@ LOCK TABLES `AB_JOINMN_ROLE_USER_user` WRITE;
 
 INSERT INTO `AB_JOINMN_ROLE_USER_user` (`id`, `created_at`, `updated_at`, `USER`, `ROLE`)
 VALUES
-  (1,NULL,NULL,'admin-uuid','dd6c2d34-0982-48b7-bc44-2456474edbea');
+  (1,NULL,NULL,'##admin-uuid##','dd6c2d34-0982-48b7-bc44-2456474edbea');
 
 /*!40000 ALTER TABLE `AB_JOINMN_ROLE_USER_user` ENABLE KEYS */;
 UNLOCK TABLES;
