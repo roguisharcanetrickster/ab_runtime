@@ -47,13 +47,10 @@ services:
 
   #config: simply exists to pull in the config/local.js into our config volume
   config:
-    image: node
-    # environment:
-    #   - AB_CONFIG_INSTALL=true
+    image: digiserve/ab-config:<%=tag%>
+    # ports:
+    #   - "9229:9229"
     volumes:
-      - type: bind
-        source: ./developer/config
-        target: /app
       - type: bind
         source: ./config/local.js
         target: /config_safe/local.js
@@ -65,7 +62,7 @@ services:
 
   #api_sails: our API end point
   api_sails:
-    image: skipdaddy/ab-api-sails:<%=tag%>
+    image: digiserve/ab-api-sails:<%=tag%>
     # ports:
     #   - "9229:9229"
     environment:
@@ -78,17 +75,31 @@ services:
       - config
   #/api_sails
 
-  #bot_manager: our #slack bot service
-  bot_manager:
-    image: skipdaddy/ab-bot-manager:<%=tag%>
+
+  #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
+  appbuilder:
+    image: digiserve/ab-appbuilder:<%=tag%>
     # ports:
     #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - config:/app/config
+    depends_on:
+      - redis
+      - config
+  #/appbuilder
+
+
+  #bot_manager: our #slack bot service
+  bot_manager:
+    image: digiserve/ab-bot-manager:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - config:/app/config
       # sharing .sock files currently don't work on docker-for-mac:
       # https://github.com/docker/for-mac/issues/483
       # For a Mac host, configure config/local.js to hostConnection.tcp
@@ -101,23 +112,111 @@ services:
       - config
   #/bot_manager
 
-  #notification_email: an smtp email service
-  notification_email:
-    image: skipdaddy/ab-notification-email:<%=tag%>
+
+  #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
+  definition_manager:
+    image: digiserve/ab-definition-manager:<%=tag%>
     # ports:
     #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-      # TODO: if we enable passing of file paths for attachments
-      # we'll need to include the common /data directory as well
+      - config:/app/config
+    depends_on:
+      - redis
+      - config
+  #/definition_manager
+
+
+  #file_processor: A service to manage uploaded files.
+  file_processor:
+    image: digiserve/ab-file-processor:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - config:/app/config
+      - files:/data
+    depends_on:
+      - redis
+      - config
+  #/file_processor
+
+
+  #log_manager: (AppBuilder) A log manager for various AB operations
+  log_manager:
+    image: digiserve/ab-log-manager:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - config:/app/config
+    depends_on:
+      - redis
+      - config
+  #/log_manager
+
+
+  #notification_email: an smtp email service
+  notification_email:
+    image: digiserve/ab-notification-email:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - config:/app/config
     depends_on:
       - redis
       - config
   #/notification_email
+
+
+  #process_manager: (AppBuilder) a micro service to manage our process tasks
+  process_manager:
+    image: digiserve/ab-process-manager:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - config:/app/config
+    depends_on:
+      - redis
+      - config
+  #/process_manager
+
+
+  #tenant_manager: (AppBuilder) A service to manage the site's tenants
+  tenant_manager:
+    image: digiserve/ab-tenant-manager:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - config:/app/config
+    depends_on:
+      - redis
+      - config
+  #/tenant_manager
+
+
+  #user_manager: (AppBuilder) A microservice for managing Users
+  user_manager:
+    image: digiserve/ab-user-manager:<%=tag%>
+    # ports:
+    #   - "9229:9229"
+    environment:
+      - COTE_DISCOVERY_REDIS_HOST=redis
+    volumes:
+      - config:/app/config
+    depends_on:
+      - redis
+      - config
+  #/user_manager
 
 
 #  #watchtower: monitor and update our running containers
@@ -131,123 +230,5 @@ services:
 #    command: --interval 10 --debug
 #  #/watchtower
 
-  #file_processor: A service to manage uploaded files.
-  file_processor:
-    image: skipdaddy/ab-file-processor:<%=tag%>
-    # ports:
-    #   - "9229:9229"
-    environment:
-      - COTE_DISCOVERY_REDIS_HOST=redis
-    volumes:
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-      - type: bind
-        source: ./data
-        target: /data
-    depends_on:
-      - redis
-      - config
-  #/file_processor
 
 
-  # #tenant_manager: (AppBuilder) A service to manage the site's tenants
-  # tenant_manager:
-  #   image: skipdaddy/ab-tenant-manager:<%=tag%>
-  #   # ports:
-  #   #   - "9229:9229"
-  #   environment:
-  #    - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #   depends_on:
-  #     - redis
-  #     - config
-  # #/tenant_manager
-
-
-  # #user_manager: (AppBuilder) A microservice for managing Users
-  # user_manager:
-  #   image: skipdaddy/ab-user-manager:<%=tag%>
-  #   # ports:
-  #   #   - "9229:9229"
-  #   environment:
-  #    - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #   depends_on:
-  #     - redis
-  #     - config
-  # #/user_manager
-
-
-  # #process_manager: (AppBuilder) a micro service to manage our process tasks
-  # process_manager:
-  #   image: skipdaddy/ab-process-manager:<%=tag%>
-  #   # ports:
-  #   #   - "9229:9229"
-  #   environment:
-  #    - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #   depends_on:
-  #     - redis
-  #     - config
-  # #/process_manager
-
-
-  # #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
-  # definition_manager:
-  #   image: skipdaddy/ab-definition-manager:<%=tag%>
-  #   # ports:
-  #   #   - "9229:9229"
-  #   environment:
-  #    - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #   depends_on:
-  #     - redis
-  #     - config
-  # #/definition_manager
-
-
-  # #appbuilder: (AppBuilder) A multi-tenant award service to process our AppBuilder requests.
-  # appbuilder:
-  #   image: skipdaddy/ab-appbuilder:<%=tag%>
-  #   # ports:
-  #   #   - "9229:9229"
-  #   environment:
-  #    - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #   depends_on:
-  #     - redis
-  #     - config
-  # #/appbuilder
-
-
-  # #log_manager: (AppBuilder) A log manager for various AB operations
-  # log_manager:
-  #   image: skipdaddy/ab-log-manager:<%=tag%>
-  #   # ports:
-  #   #   - "9229:9229"
-  #   environment:
-  #    - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - type: bind
-  #       source: ./config/local.js
-  #       target: /app/config/local.js
-  #   depends_on:
-  #     - redis
-  #     - config
-  # #/log_manager
