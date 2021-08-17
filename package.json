@@ -19,6 +19,13 @@
     "ssl": "",
     "boot": "docker stack deploy -c docker-compose.yml ab & ./node_modules/.bin/forever start app.js",
     "dev-compose": "docker-compose -f docker-compose.dev.yml up & node_modules/.bin/nodemon app.js",
-    "dev": "node_modules/.bin/nodemon app.js & docker stack deploy -c docker-compose.dev.yml ab"
+    "dev": "node_modules/.bin/nodemon app.js & docker stack deploy -c docker-compose.dev.yml ab",
+    "cypress:open": "cypress open --project ./test/e2e",
+    "test": "appbuilder test setup ab && npm run test:wait &&  npm run test:e2e",
+    "test:boot": "docker stack deploy -c docker-compose.dev.yml -c ./test/setup/test-compose.yml test_ab",
+    "test:down": "appbuilder test down ab",
+    "test:wait": "appbuilder test waitBoot ab",
+    "test:e2e": "npx cypress run --reporter dot --project ./test/e2e",
+    "test:reset": "bash testReset.sh"
   }
 }

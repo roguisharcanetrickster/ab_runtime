@@ -14,8 +14,6 @@ services:
   #db: use Maria DB as our backend DB
   db:
     image: mariadb
-    ports:
-      - "<%=dbPort%>:3306"
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
@@ -35,8 +33,6 @@ services:
   #redis: use redis to allow cote services to find each other across a swarm
   redis:
     image: redis
-    #ports:
-    #  - 6379:6379
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
@@ -64,9 +60,6 @@ services:
   #api_sails: our API end point
   api_sails:
     image: node
-    ports:
-      - "1337:1337"
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -86,8 +79,6 @@ services:
   #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
   appbuilder:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -107,8 +98,6 @@ services:
   #bot_manager: our #slack bot service
   bot_manager:
     image: node
-    # ports:
-    #   - "1338:1338"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -134,8 +123,6 @@ services:
   #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
   definition_manager:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -154,8 +141,6 @@ services:
   #file_processor: A service to manage uploaded files.
   file_processor:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -175,8 +160,6 @@ services:
   #log_manager: (AppBuilder) A log manager for various AB operations
   log_manager:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -195,8 +178,6 @@ services:
   #notification_email: an smtp email service
   notification_email:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -215,8 +196,6 @@ services:
   #process_manager: (AppBuilder) a micro service to manage our process tasks
   process_manager:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -235,8 +214,6 @@ services:
   #tenant_manager: (AppBuilder) A service to manage the site's tenants
   tenant_manager:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -255,8 +232,6 @@ services:
   #user_manager: (AppBuilder) A microservice for managing Users
   user_manager:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:

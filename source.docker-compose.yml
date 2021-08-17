@@ -14,8 +14,6 @@ services:
   #db: use Maria DB as our backend DB
   db:
     image: mariadb
-    ports:
-      - "<%=dbPort%>:3306"
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
@@ -37,8 +35,6 @@ services:
     image: redis
     ## NOTE: don't expose the service to the outside for security:
     ## if you do expose it, then set a password.
-    #ports:
-    #  - 6379:6379
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
@@ -48,8 +44,6 @@ services:
   #config: simply exists to pull in the config/local.js into our config volume
   config:
     image: digiserve/ab-config:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     volumes:
       - type: bind
         source: ./config/local.js
@@ -63,8 +57,6 @@ services:
   #api_sails: our API end point
   api_sails:
     image: digiserve/ab-api-sails:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -79,8 +71,6 @@ services:
   #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
   appbuilder:
     image: digiserve/ab-appbuilder:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -94,8 +84,6 @@ services:
   #bot_manager: our #slack bot service
   bot_manager:
     image: digiserve/ab-bot-manager:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -116,8 +104,6 @@ services:
   #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
   definition_manager:
     image: digiserve/ab-definition-manager:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -131,8 +117,6 @@ services:
   #file_processor: A service to manage uploaded files.
   file_processor:
     image: digiserve/ab-file-processor:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -147,8 +131,6 @@ services:
   #log_manager: (AppBuilder) A log manager for various AB operations
   log_manager:
     image: digiserve/ab-log-manager:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -162,8 +144,6 @@ services:
   #notification_email: an smtp email service
   notification_email:
     image: digiserve/ab-notification-email:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -177,8 +157,6 @@ services:
   #process_manager: (AppBuilder) a micro service to manage our process tasks
   process_manager:
     image: digiserve/ab-process-manager:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -192,8 +170,6 @@ services:
   #tenant_manager: (AppBuilder) A service to manage the site's tenants
   tenant_manager:
     image: digiserve/ab-tenant-manager:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -207,8 +183,6 @@ services:
   #user_manager: (AppBuilder) A microservice for managing Users
   user_manager:
     image: digiserve/ab-user-manager:<%=tag%>
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
