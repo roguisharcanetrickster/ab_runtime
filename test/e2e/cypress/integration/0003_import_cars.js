@@ -1,6 +1,6 @@
-const Config = require("../../../setup/config.js");
+const CommonLogin = require("../../../setup/commonLogin.js");
 
-var loggedInCookie = null;
+// var loggedInCookie = null;
 var isAppImported = false;
 
 describe("CARS:", () => {
@@ -9,6 +9,14 @@ describe("CARS:", () => {
    });
 
    beforeEach(() => {
+      CommonLogin(cy);
+      if (!isAppImported) {
+         isAppImported = true;
+         cy.request("POST", "/test/import", {
+            file: "imports/app_cars.json",
+         });
+      }
+      /*
       if (!loggedInCookie) {
          cy.request("POST", "/auth/login", {
             tenant: Config.tenant, // "admin",
@@ -31,6 +39,7 @@ describe("CARS:", () => {
       } else {
          cy.setCookie(loggedInCookie.name, loggedInCookie.value);
       }
+      */
    });
 
    it("has CARS app in the Nav Menu", () => {

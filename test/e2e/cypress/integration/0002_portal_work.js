@@ -1,22 +1,25 @@
-var loggedInCookie = null;
+const CommonLogin = require("../../../setup/commonLogin.js");
+
+// var loggedInCookie = null;
 
 describe("portal_work:", () => {
    beforeEach(() => {
-      if (!loggedInCookie) {
-         cy.request("POST", "/auth/login", {
-            tenant: "admin",
-            email: "admin@email.com",
-            password: "password",
-         })
-            .its("body")
-            .as("currentUser");
+      CommonLogin(cy);
+      // if (!loggedInCookie) {
+      //    cy.request("POST", "/auth/login", {
+      //       tenant: Config.tenant,
+      //       email: Config.user.email,
+      //       password: Config.user.password,
+      //    })
+      //       .its("body")
+      //       .as("currentUser");
 
-         cy.getCookie("sails.sid").then((cookie) => {
-            loggedInCookie = cookie;
-         });
-      } else {
-         cy.setCookie(loggedInCookie.name, loggedInCookie.value);
-      }
+      //    cy.getCookie("sails.sid").then((cookie) => {
+      //       loggedInCookie = cookie;
+      //    });
+      // } else {
+      //    cy.setCookie(loggedInCookie.name, loggedInCookie.value);
+      // }
    });
 
    it("has Site Admin in the Nav Menu", () => {
