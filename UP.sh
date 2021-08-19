@@ -6,5 +6,5 @@ then
 	File="docker-compose.dev.yml"
 fi
 nohup node ab_system_monitor.js &> /dev/null & 
-docker stack deploy -c $File ab
+docker stack deploy -c $File -c docker-compose.override.yml ab
 ./logs.js

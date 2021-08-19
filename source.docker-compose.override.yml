@@ -2,10 +2,6 @@ version: "3.2"
 
 services:
 
-  # #nginx setup
-  # web:
-  #   ports:
-  #     - "8080:80"
 
   #db: use Maria DB as our backend DB
   db:

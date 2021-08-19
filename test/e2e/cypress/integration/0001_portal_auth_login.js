@@ -1,14 +1,15 @@
+const Config = require("../../../setup/config.js");
+
 describe("Login Page", () => {
    before(() => {
       // make sure we have a clean slate before continuing.
       cy.exec("npm run test:reset");
    });
 
-   //// LEFT OFF HERE, test out the npm run test:reset script
    // 1) Successful Login
    it("loads the login page", () => {
       cy.visit("/");
-      Login("admin", "admin@email.com", "password");
+      Login(Config.tenant, Config.user.email, Config.user.password);
       cy.wait(3000); // a login will make you wait > 3s
 
       // warning should NOT exist
@@ -27,7 +28,7 @@ describe("Login Page", () => {
 
    // 3) Login Error Messages
    it("Displays Error Message when invalid Username / Password", () => {
-      Login("admin", "aadmin@email.com", "password");
+      Login(Config.tenant, `a${Config.user.email}`, Config.user.password);
       cy.wait(2000); // a login will make you wait > 3s
 
       // now the warning should exist
