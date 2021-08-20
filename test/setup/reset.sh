@@ -25,3 +25,4 @@ echo "SET FOREIGN_KEY_CHECKS = 1;" >> ./drop_all_tables.sql
 
 mysql -u root -p[dbPassword] "appbuilder-admin" < ./drop_all_tables.sql
 mysql -u root -p[dbPassword] "appbuilder-admin" < ./sql/reset.sql
+mysql -u root -p[dbPassword] "appbuilder-admin" < ./sql/reset_tenant.sql
