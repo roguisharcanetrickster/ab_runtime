@@ -33,6 +33,10 @@ services:
     ports:
       - "1337:1337"
       # - "9229:9229"
+    environment:
+      - AB_TESTING=true
+      # AB_TESTING is an environment variable that opens up some
+      # API routes only available in our testing environment.
     volumes:
       - type: bind
         source: ./test/e2e/cypress/integration
