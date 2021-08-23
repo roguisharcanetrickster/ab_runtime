@@ -1,45 +1,21 @@
-const CommonLogin = require("../../../setup/commonLogin.js");
+const Common = require("../../../setup/common.js");
 
-// var loggedInCookie = null;
 var isAppImported = false;
+// {bool} have we already imported our Application Definitions?
 
 describe("CARS:", () => {
    before(() => {
-      cy.exec("npm run test:reset");
+      Common.ResetDB(cy);
    });
 
    beforeEach(() => {
-      CommonLogin(cy);
+      Common.AuthLogin(cy);
       if (!isAppImported) {
          isAppImported = true;
          cy.request("POST", "/test/import", {
-            file: "imports/app_cars.json",
+            file: "imports/test_import/app_test.json",
          });
       }
-      /*
-      if (!loggedInCookie) {
-         cy.request("POST", "/auth/login", {
-            tenant: Config.tenant, // "admin",
-            email: Config.user.email, // "admin@email.com",
-            password: Config.user.password, // "password",
-         })
-            .its("body")
-            .as("currentUser");
-
-         cy.getCookie("sails.sid").then((cookie) => {
-            loggedInCookie = cookie;
-         });
-
-         if (!isAppImported) {
-            isAppImported = true;
-            cy.request("POST", "/test/import", {
-               file: "imports/app_cars.json",
-            });
-         }
-      } else {
-         cy.setCookie(loggedInCookie.name, loggedInCookie.value);
-      }
-      */
    });
 
    it("has CARS app in the Nav Menu", () => {

@@ -1,9 +1,10 @@
 const Config = require("../../../setup/config.js");
+const Common = require("../../../setup/common.js");
 
 describe("Login Page", () => {
    before(() => {
       // make sure we have a clean slate before continuing.
-      cy.exec("npm run test:reset");
+      Common.ResetDB(cy);
    });
 
    // 1) Successful Login

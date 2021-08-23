@@ -1,25 +1,10 @@
-const CommonLogin = require("../../../setup/commonLogin.js");
+const Common = require("../../../setup/common.js");
 
 // var loggedInCookie = null;
 
 describe("portal_work:", () => {
    beforeEach(() => {
-      CommonLogin(cy);
-      // if (!loggedInCookie) {
-      //    cy.request("POST", "/auth/login", {
-      //       tenant: Config.tenant,
-      //       email: Config.user.email,
-      //       password: Config.user.password,
-      //    })
-      //       .its("body")
-      //       .as("currentUser");
-
-      //    cy.getCookie("sails.sid").then((cookie) => {
-      //       loggedInCookie = cookie;
-      //    });
-      // } else {
-      //    cy.setCookie(loggedInCookie.name, loggedInCookie.value);
-      // }
+      Common.AuthLogin(cy);
    });
 
    it("has Site Admin in the Nav Menu", () => {
