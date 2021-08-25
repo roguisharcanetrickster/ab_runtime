@@ -9,5 +9,5 @@ then
 	docker ps
 	echo ""
 else
-	docker exec $ID_Service /bin/bash reset.sh
+	docker exec $ID_Service bash reset.sh
 fi

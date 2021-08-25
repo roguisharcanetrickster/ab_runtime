@@ -1,4 +1,3 @@
-#!/usr/bin/bash
 rm ./drop_all_tables.mysql
 
 ## gotta ignore foreigh key checks
