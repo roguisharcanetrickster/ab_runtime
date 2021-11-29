@@ -37,13 +37,21 @@ module.exports = {
 
    ResetDB: function (cy) {
       //Check environment for alternate stack name
-      let stack = Cypress.env('stack');
-      stack = stack === undefined ? '' : ` ${stack}`;
+      const stack = Cypress.env("stack");
 
       // Clear the Physical DB
-      cy.exec(`npm run test:reset${stack}`);
+      cy.exec(`npm run test:reset ${stack}`);
 
       // Have the running services clear their definitions.
       cy.request("POST", "/test/reset", { tenant: Config.tenant });
+   },
+
+   RunSQL: function (cy, folder, files) {
+      const stack = Cypress.env("stack");
+      cy.exec(
+         `bash cypress/utils/sql_manager.sh ${folder} ${stack} ${files.join(
+            " "
+         )}`
+      );
    },
 };
