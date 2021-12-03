@@ -356,7 +356,9 @@ LOCK TABLES `SITE_ROLE` WRITE;
 
 INSERT INTO `SITE_ROLE` (`uuid`, `created_at`, `updated_at`, `properties`, `translations`)
 VALUES
-  ('dd6c2d34-0982-48b7-bc44-2456474edbea','2020-05-13 09:48:10','2020-05-13 09:50:06',NULL,'[{\"language_code\":\"en\",\"name\":\"System Admin\",\"description\":\"Full Access\"}]');
+  ('dd6c2d34-0982-48b7-bc44-2456474edbea','2020-05-13 09:48:10','2020-05-13 09:50:06',NULL,'[{\"language_code\":\"en\",\"name\":\"System Admin\",\"description\":\"Full Access\"}]'),
+  ('6cc04894-a61b-4fb5-b3e5-b8c3f78bd331','2021-09-10 06:07:44','2021-09-10 06:07:44',NULL,'[{\"language_code\":\"en\",\"name\":\"System Builder\",\"description\":\"Able to edit System Objects\"}]'),
+  ('e1be4d22-1d00-4c34-b205-ef84b8334b19','2021-09-21 05:36:06','2021-09-21 05:36:06',NULL,'[{\"language_code\":\"en\",\"name\":\"Builder\",\"description\":\"Able to edit Applications\"}]');
 
 /*!40000 ALTER TABLE `SITE_ROLE` ENABLE KEYS */;
 UNLOCK TABLES;
