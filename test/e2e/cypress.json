@@ -1,6 +1,8 @@
 {
-	"baseUrl": "http://localhost:8088",
-	"testFiles":	"**/*.js",
-	"video": false,
-	"env": {"stack" : "test_ab"}
+   "baseUrl": "http://localhost:8088",
+   "testFiles": "**/*.js",
+   "video": false,
+   "env": { "stack": "test_ab-v2" },
+   "responseTimeout": 60000,
+   "ignoreTestFiles": "**/*.json"
 }
