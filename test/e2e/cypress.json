@@ -4,5 +4,6 @@
    "video": false,
    "env": { "stack": "test_ab" },
    "responseTimeout": 60000,
+   "defaultCommandTimeout": 12000,
    "ignoreTestFiles": "**/*.json"
 }
