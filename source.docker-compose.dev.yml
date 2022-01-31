@@ -22,11 +22,11 @@ services:
       - mysql_key:/key
       - mysql_password:/secret
     # on windows: use this command. (be sure to clear out mysql/data folder)
-    # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
+    # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON --wait-timeout=60 --interactive-timeout=60
     ######
     # when there is a problem with : Error: ER_CRASHED_ON_USAGE: Table 'AAAAAA' is marked as crashed and should be repaired
     # this can happen with the alter table algorithm: try the safest(and slowest) COPY
-    command: ["mysqld", "--alter-algorithm=copy"]
+    command: ["mysqld", "--alter-algorithm=copy" , "--wait-timeout=60", "--interactive-timeout=60"]
   #/db
 
 
@@ -173,7 +173,7 @@ services:
     working_dir: /app
     command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/log_manager
-  
+
 
   #notification_email: an smtp email service
   notification_email:
@@ -257,4 +257,3 @@ services:
 #        target: /var/run/docker.sock
 #    command: --interval 10 --debug
 #  #/watchtower
-
