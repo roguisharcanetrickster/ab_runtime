@@ -46,21 +46,10 @@ module.exports = {
       cy.request("POST", "/test/reset", { tenant: Config.tenant });
    },
 
-   /**
-    * run sql files in the test database container
-    * @function RunSQL
-    * @param {cy} cy cyress instance
-    * @param {string} folder pass in the test folder name. (expect sql filed to
-    * be in folder/test_setup/sql)
-    * @param {string | string[]} files pass in the names of sql files to run
-    */
    RunSQL: function (cy, folder, files) {
       const stack = Cypress.env("stack");
-      if (typeof files === "string") {
-         files = [files];
-      }
       cy.exec(
-         `node cypress/utils/sql_manager.js ${folder} ${stack} ${files.join(
+         `bash cypress/utils/sql_manager.sh ${folder} ${stack} ${files.join(
             " "
          )}`
       );
