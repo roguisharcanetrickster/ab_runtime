@@ -48,8 +48,12 @@ module.exports = {
 
    RunSQL: function (cy, folder, files) {
       const stack = Cypress.env("stack");
+      if (typeof files === "string") {
+         files = [files];
+      }
+
       cy.exec(
-         `bash cypress/utils/sql_manager.sh ${folder} ${stack} ${files.join(
+         `node cypress/utils/sql_manager.js ${folder} ${stack} ${files.join(
             " "
          )}`
       );
