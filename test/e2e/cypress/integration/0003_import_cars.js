@@ -1,5 +1,8 @@
 const Common = require("../../../setup/common.js");
 
+// Don't stop tests on uncaught errors
+Cypress.on("uncaught:exception", () => false);
+
 var isAppImported = false;
 // {bool} have we already imported our Application Definitions?
 
@@ -16,10 +19,10 @@ describe("CARS:", () => {
             file: "imports/test_import/app_test.json",
          });
       }
+      cy.visit("/");
    });
 
    it("has CARS app in the Nav Menu", () => {
-      cy.visit("/").wait(1500);
       NavigateCars(cy);
 
       // Should show CARS in the Menu Title
@@ -35,6 +38,8 @@ describe("CARS:", () => {
 });
 
 function NavigateCars(cy) {
-   cy.get("[data-cy=portal_work_menu_sidebar]").click();
-   cy.get("[data-cy=45c62df9-ddd6-4744-84d6-50a2d549289d]").click();
+   cy.get("[data-cy=portal_work_menu_sidebar]").should("be.visible").click();
+   cy.get("[data-cy=45c62df9-ddd6-4744-84d6-50a2d549289d]")
+      .should("be.visible")
+      .click();
 }

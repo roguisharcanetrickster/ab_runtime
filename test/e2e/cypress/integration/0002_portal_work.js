@@ -1,14 +1,16 @@
 const Common = require("../../../setup/common.js");
 
 // var loggedInCookie = null;
+// Don't stop tests on uncaught errors
+Cypress.on("uncaught:exception", () => false);
 
 describe("portal_work:", () => {
    beforeEach(() => {
       Common.AuthLogin(cy);
+      cy.visit("/");
    });
 
    it("has Site Admin in the Nav Menu", () => {
-      cy.visit("/").wait(500);
       NavigateSiteAdmin(cy);
 
       // Should show Site Admin in the Menu Title
@@ -33,10 +35,14 @@ describe("portal_work:", () => {
 });
 
 function NavigateSiteAdmin(cy) {
-   cy.get("[data-cy=portal_work_menu_sidebar]").click();
-   cy.get("[data-cy=227bcbb3-437f-4bb5-a5a1-ec3198696206]").click();
+   cy.get("[data-cy=portal_work_menu_sidebar]").should("be.visible").click();
+   cy.get("[data-cy=227bcbb3-437f-4bb5-a5a1-ec3198696206]")
+      .should("be.visible")
+      .click();
 }
 
-function NavigateRole(cy) {
-   cy.get("[webix_tm_id=1a3e991e-aa1e-4eef-8cf8-fd7c5d97ae53_menu]").click();
-}
+// function NavigateRole(cy) {
+//    cy.get("[webix_tm_id=1a3e991e-aa1e-4eef-8cf8-fd7c5d97ae53_menu]")
+//       .should("be.visible")
+//       .click();
+// }
