@@ -24,19 +24,21 @@ BEGIN
 
     /* UPSERT new GLSegment (NOT 3991) */
     INSERT INTO `AB_AccountingApp_GLSegment`
-        (`uuid`, `FY Period`, `COA Num`, `RC Code`, 
+        (`uuid`, `Balndx`,
+        `FY Period`, `COA Num`, `RC Code`, 
         `Starting Balance`, `Credit`, `Debit`, `Running Balance`,
         `created_at`, `updated_at`)
     SELECT * FROM
     (
         SELECT DISTINCT
             IFNULL(GL.`uuid`, UUID()),
+            GL.`Balndx`,
             FY_PERIOD,
-            JE.`Account`,
-            JE.`RC Code`,
-            IFNULL(`Starting Balance`, 0),
-            SUM(IFNULL(JE.`Credit`, 0)) `Credit`,
-            SUM(IFNULL(JE.`Debit`, 0)) `Debit`,
+            IFNULL(GL.`COA Num`, JE.`Account`) `COA Num`,
+            IFNULL(GL.`RC Code`, JE.`RC Code`) `RC Code`,
+            IFNULL(GL.`Starting Balance`, 0) `Starting Balance`,
+            IFNULL(GL.`Credit`, 0) + SUM(IFNULL(JE.`Credit`, 0)) `Credit`,
+            IFNULL(GL.`Debit`, 0) + SUM(IFNULL(JE.`Debit`, 0)) `Debit`,
             /* Calculate RUNNING BALANCE */
             IFNULL((
                 SELECT (CASE 
@@ -46,16 +48,24 @@ BEGIN
                     OR AC.`Category` = ACCOUNT_Equity
                     OR AC.`Category` = ACCOUNT_Income
                     /* startingBalance - totalDebit + totalCredit */
-                    THEN IFNULL(GL.`Starting Balance`, 0) - SUM(IFNULL(JE.`Debit`, 0)) + SUM(IFNULL(JE.`Credit`, 0))
+                    THEN (
+                        IFNULL(GL.`Starting Balance`, 0) - 
+                        (IFNULL(GL.`Debit`, 0) + SUM(IFNULL(JE.`Debit`, 0))) + 
+                        (IFNULL(GL.`Credit`, 0) + SUM(IFNULL(JE.`Credit`, 0)))
+                    )
 
                     /* Assets, Expenses */
                     WHEN AC.`Category` = ACCOUNT_Assets
                     OR AC.`Category` = ACCOUNT_Expenses
                     /* startingBalance + totalDebit - totalCredit */
-                    THEN IFNULL(GL.`Starting Balance`, 0) + SUM(IFNULL(JE.`Debit`, 0)) - SUM(IFNULL(JE.`Credit`, 0))
+                    THEN (
+                        IFNULL(GL.`Starting Balance`, 0) + 
+                        (IFNULL(GL.`Debit`, 0) + SUM(IFNULL(JE.`Debit`, 0))) - 
+                        (IFNULL(GL.`Credit`, 0) + SUM(IFNULL(JE.`Credit`, 0)))
+                    )
                     END)
                 FROM `AB_AccountingApp_Account` AC
-                WHERE AC.`Acct Num` = JE.`Account`
+                WHERE AC.`Acct Num` = IFNULL(GL.`COA Num`, JE.`Account`)
                 LIMIT 1
             ), 0) `Running Balance`,
             NOW() `created_at`,
@@ -71,7 +81,7 @@ BEGIN
         WHERE
             JE.`Batch Index` = BATCH_INDEX
             AND JE.`Account` IS NOT NULL
-            /* AND JE.`RC Code` IS NOT NULL */
+            AND JE.`RC Code` IS NOT NULL
         GROUP BY JE.`Account` , JE.`RC Code`
     ) r
     ON DUPLICATE KEY UPDATE
@@ -82,13 +92,15 @@ BEGIN
 
     /* UPDATE GLSegment (Account 3991) */
     INSERT INTO `AB_AccountingApp_GLSegment`
-        (`uuid`, `FY Period`, `COA Num`, `RC Code`, 
+        (`uuid`, `Balndx`,
+        `FY Period`, `COA Num`, `RC Code`, 
         `Starting Balance`, `Credit`, `Debit`, `Running Balance`,
         `created_at`, `updated_at`)
     SELECT * FROM
     (
         SELECT DISTINCT
             IFNULL(GL3991.`uuid`, UUID()),
+            GL3991.`Balndx`,
             FY_PERIOD,
             3991,
             GL.`RC Code`,
