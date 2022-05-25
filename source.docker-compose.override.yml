@@ -24,6 +24,11 @@ services:
   #   ports:
   #     - "9229:9229"
 
+  #custom_reports: (AppBuilder) A microservice for Custom Reports
+  # custom_reports:
+  #   ports:
+  #     - "9229:9229"
+
   #bot_manager: our #slack bot service
   bot_manager:
     ports:
@@ -64,4 +69,3 @@ services:
   # user_manager:
   #   ports:
   #     - "9229:9229"
-
