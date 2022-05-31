@@ -7,9 +7,25 @@ volumes:
   mysql_data:
   mysql_key:
   mysql_password:
+  nginx_etc:
   redis_data:
 
 services:
+  #nginx setup
+  web:
+    image: nginx
+    volumes:
+      - type: bind
+        source: ./nginx/html
+        target: /usr/share/nginx/html
+      - nginx_etc:/etc
+      - files:/data
+      - type: bind
+        source: ./developer/web/assets
+        target: /app/assets
+    depends_on:
+      - api_sails
+   #/nginx
 
   #db: use Maria DB as our backend DB
   db:

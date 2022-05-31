@@ -11,6 +11,20 @@ volumes:
 
 services:
 
+  #nginx setup
+  web:
+    image: digiserve:web
+    volumes:
+      - type: bind
+        source: ./nginx/html
+        target: /usr/share/nginx/html
+      - nginx_etc:/etc
+      - files:/data
+    depends_on:
+      - api_sails
+     #/nginx
+
+
   #db: use Maria DB as our backend DB
   db:
     image: mariadb

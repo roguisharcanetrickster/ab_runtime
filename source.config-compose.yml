@@ -9,6 +9,7 @@ volumes:
   mysql_config:
   mysql_key:
   mysql_password:
+  nginx_etc:
 services:
 
   #config: simply exists to pull in the config/local.js into our config volume
@@ -33,6 +34,15 @@ services:
       - type: bind
         source: ./mysql/password
         target: /mysql_password_source/password
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /nginx/nginx.conf
+      - type: bind
+        source: ./nginx/default-nossl.conf
+        target: /nginx/conf.d/default.conf
+      - type: bind
+        source: ./nginx/ssl
+        target: /ssl
 
       ##
       ## Mount our Volumes to update
@@ -41,6 +51,7 @@ services:
       - mysql_config:/mysql_config
       - mysql_key:/mysql_key
       - mysql_password:/mysql_password
+      - nginx_etc:/nginx_etc
     working_dir: /app
     command: ["node", "app.js"]
   #/config
