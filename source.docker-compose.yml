@@ -7,6 +7,7 @@ volumes:
   mysql_data:
   mysql_key:
   mysql_password:
+  nginx_etc:
   redis_data:
 
 services:
