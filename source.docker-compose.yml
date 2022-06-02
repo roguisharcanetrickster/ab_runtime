@@ -14,7 +14,7 @@ services:
 
   #nginx setup
   web:
-    image: digiserve:web
+    image: digiserve/ab-web:<%=tag%>
     volumes:
       - type: bind
         source: ./nginx/html
