@@ -72,6 +72,7 @@ BEGIN
                 GL.`FY Period` LIKE FY_PERIOD
         ) r
         ON DUPLICATE KEY UPDATE
+        `Starting Balance` = r.`Starting Balance`,
         `Credit` = r.`Credit`,
         `Debit`= r.`Debit`,
         `Running Balance` = r.`Running Balance`,
