@@ -70,7 +70,12 @@ BEGIN
                 `AB_AccountingApp_GLSegment` GL
             WHERE
                 GL.`FY Period` LIKE FY_PERIOD
-        ) r;
+        ) r
+        ON DUPLICATE KEY UPDATE
+        `Credit` = r.`Credit`,
+        `Debit`= r.`Debit`,
+        `Running Balance` = r.`Running Balance`,
+        `updated_at` = NOW();
 
 END$$
 DELIMITER ;
