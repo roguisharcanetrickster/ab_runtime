@@ -195,6 +195,20 @@ services:
   #/process_manager
 
 
+  #relay: (Appbuilder} A service to handle the communications with our relay server.
+  relay:
+    image: digiserve/ab-relay:<%=tag%>
+    environment:
+     - COTE_DISCOVERY_REDIS_HOST=redis
+    hostname: relay
+    volumes:
+      - config:/app/config
+    depends_on:
+      - redis
+      - config
+  #/relay
+
+
   #tenant_manager: (AppBuilder) A service to manage the site's tenants
   tenant_manager:
     image: digiserve/ab-tenant-manager:<%=tag%>

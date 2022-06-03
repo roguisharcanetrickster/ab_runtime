@@ -641,6 +641,72 @@ UNLOCK TABLES;
 
 
 
+# Dump of table SITE_QR_APPUSER
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `SITE_RELAY_APPUSER`;
+
+CREATE TABLE `SITE_QR_APPUSER` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `siteuser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `mobile` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `token` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `siteuser` (`siteuser`),
+  UNIQUE KEY `mobile` (`mobile`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+# Dump of table SITE_RELAY_APPUSER
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `SITE_RELAY_APPUSER`;
+
+CREATE TABLE `SITE_RELAY_APPUSER` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `relayUser` int(11) DEFAULT NULL,
+  `aes` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appUUID` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appID` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+# Dump of table SITE_RELAY_REQUEST_QUEUE
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `SITE_RELAY_REQUEST_QUEUE`;
+
+CREATE TABLE `SITE_RELAY_REQUEST_QUEUE` (
+  `jt` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `request` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `jt` (`jt`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+# Dump of table SITE_RELAY_USER
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `SITE_RELAY_USER`;
+
+CREATE TABLE `SITE_RELAY_USER` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `siteuser_guid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `registrationToken` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `rsa_public_key` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `rsa_private_key` mediumtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `siteuser_guid` (`siteuser_guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
