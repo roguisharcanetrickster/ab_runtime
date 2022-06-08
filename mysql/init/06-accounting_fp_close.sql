@@ -94,9 +94,11 @@ BEGIN
       ) r
       ON DUPLICATE KEY UPDATE
       `Starting Balance` = r.`Starting Balance`,
-      `Credit` = r.`Credit`,
-      `Debit`= r.`Debit`,
-      `Running Balance` = r.`Running Balance`,
+      `Running Balance` = IF(
+         (r.`COA Num` > 1999 AND r.`COA Num` < 7000) OR (r.`COA Num` > 8999 AND r.`COA Num` < 9200),
+         r.`Starting Balance` + `AB_AccountingApp_GLSegment`.`Credit` - `AB_AccountingApp_GLSegment`.`Debit`,
+         r.`Starting Balance` + `AB_AccountingApp_GLSegment`.`Debit` - `AB_AccountingApp_GLSegment`.`Credit`  
+         ),
       `updated_at` = NOW();
 
 END$$
