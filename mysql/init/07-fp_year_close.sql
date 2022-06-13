@@ -149,17 +149,6 @@ BEGIN
          UUID() `uuid`
       FROM
          `AB_MyTeamFinance_ResponsibilityCenter` RC
-      --       LEFT JOIN
-      --    `AB_AccountingApp_GLSegment` GL
-      --       ON 
-      --       GL.`RC Code` = RC.`RC Name`
-      -- WHERE
-      --    GL.`FY Period`=FP_Last
-      --    AND (
-      --       GL.`COA Num` = 3500 OR
-      --       GL.`COA Num` = 3991 
-      --    )
-      -- GROUP BY GL.`FY Period`, RC.`RC Name`
    ) r
    ON DUPLICATE KEY UPDATE
    `Starting Balance` = r.`Starting Balance`,
@@ -168,9 +157,15 @@ BEGIN
    `Running Balance` = r.`Running Balance`,
    `updated_at` = NOW();
 
+   -- update running balance
+   UPDATE `AB_AccountingApp_GLSegment`
+   SET 
+      `Running Balance` = `Starting Balance` 
+   WHERE `Balndx` LIKE ('%M01-3500-%') ;
+
 -- 5. Find All M1 Balances With Account Type = Income, Expense, or Equity
 -- 6. Update M1 Balances
-INSERT INTO `AB_AccountingApp_GLSegment` (
+   INSERT INTO `AB_AccountingApp_GLSegment` (
       `uuid`,
       `Balndx`,
       `FY Period`,
@@ -193,7 +188,7 @@ INSERT INTO `AB_AccountingApp_GLSegment` (
       IFNULL(GL.`Running Balance`, 0) `Starting Balance`,
       0 `Credit`,
       0 `Debit`,
-      IFNULL(GL.`Running Balance`, 0) `Starting Balance`,
+      IFNULL(GL.`Running Balance`, 0) `Running Balance`
       FROM
       `AB_AccountingApp_GLSegment` GL
       WHERE
