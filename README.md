@@ -134,7 +134,7 @@ The following steps need to be done with the same docker stack name you plan to 
      ```bash
      $ docker service logs -f mystack_db
      ```
-   - Bring down the stack when you see `... init complete (db)`
+   - Bring down the stack when you see `mysqld: ready for connections`
      ```bash
      $ docker stack rm mystack
      ```
@@ -142,7 +142,7 @@ The following steps need to be done with the same docker stack name you plan to 
 ## Start AppBuilder
 
 ```sh
-$ docker stack deploy -c docker-compose.yml mystack
+$ docker stack deploy -c docker-compose.yml -c docker-compose.override.yml mystack
 ```
 
 ## Stop AppBuilder
