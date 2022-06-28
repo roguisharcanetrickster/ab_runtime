@@ -9,8 +9,10 @@ services:
   #db: use Maria DB as our backend DB
   db:
     image: mariadb
-    ports:
-      - "3306:3306"
+    security_opt:
+      label: disable
+    #ports:
+    #  - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
