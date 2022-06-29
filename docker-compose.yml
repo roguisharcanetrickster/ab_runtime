@@ -14,7 +14,7 @@ services:
 
   #nginx setup
   web:
-    image: digiserve/ab-web:develop
+    image: docker.io/digiserve/ab-web:develop
     volumes:
       - type: bind
         source: ./nginx/html
@@ -28,7 +28,7 @@ services:
 
   #db: use Maria DB as our backend DB
   db:
-    image: mariadb
+    image: docker.io/mariadb
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
@@ -47,7 +47,7 @@ services:
 
   #redis: use redis to allow cote services to find each other across a swarm
   redis:
-    image: redis
+    image: docker.io/redis
     ## NOTE: don't expose the service to the outside for security:
     ## if you do expose it, then set a password.
     volumes:
@@ -58,7 +58,7 @@ services:
 
   #config: simply exists to pull in the config/local.js into our config volume
   config:
-    image: digiserve/ab-config:develop
+    image: docker.io/digiserve/ab-config:develop
     volumes:
       - type: bind
         source: ./config/local.js
@@ -71,7 +71,7 @@ services:
 
   #api_sails: our API end point
   api_sails:
-    image: digiserve/ab-api-sails:develop
+    image: docker.io/digiserve/ab-api-sails:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -85,7 +85,7 @@ services:
 
   #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
   appbuilder:
-    image: digiserve/ab-appbuilder:develop
+    image: docker.io/digiserve/ab-appbuilder:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -118,7 +118,7 @@ services:
 
   # custom_reports: A microservice for managing custom reports
   custom_reports:
-    image: digiserve/ab-custom-reports:develop
+    image: docker.io/digiserve/ab-custom-reports:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -131,7 +131,7 @@ services:
 
   #definition_manager: (AppBuilder) A service to manage the definitions for a running AppBuilder platform.
   definition_manager:
-    image: digiserve/ab-definition-manager:develop
+    image: docker.io/digiserve/ab-definition-manager:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -144,7 +144,7 @@ services:
 
   #file_processor: A service to manage uploaded files.
   file_processor:
-    image: digiserve/ab-file-processor:develop
+    image: docker.io/digiserve/ab-file-processor:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -158,7 +158,7 @@ services:
 
   #log_manager: (AppBuilder) A log manager for various AB operations
   log_manager:
-    image: digiserve/ab-log-manager:develop
+    image: docker.io/digiserve/ab-log-manager:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -171,7 +171,7 @@ services:
 
   #notification_email: an smtp email service
   notification_email:
-    image: digiserve/ab-notification-email:develop
+    image: docker.io/digiserve/ab-notification-email:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -184,7 +184,7 @@ services:
 
   #process_manager: (AppBuilder) a micro service to manage our process tasks
   process_manager:
-    image: digiserve/ab-process-manager:develop
+    image: docker.io/digiserve/ab-process-manager:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -197,7 +197,7 @@ services:
 
   #relay: (Appbuilder} A service to handle the communications with our relay server.
   relay:
-    image: digiserve/ab-relay:develop
+    image: docker.io/digiserve/ab-relay:develop
     environment:
      - COTE_DISCOVERY_REDIS_HOST=redis
     hostname: relay
@@ -211,7 +211,7 @@ services:
 
   #tenant_manager: (AppBuilder) A service to manage the site's tenants
   tenant_manager:
-    image: digiserve/ab-tenant-manager:develop
+    image: docker.io/digiserve/ab-tenant-manager:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
@@ -224,7 +224,7 @@ services:
 
   #user_manager: (AppBuilder) A microservice for managing Users
   user_manager:
-    image: digiserve/ab-user-manager:develop
+    image: docker.io/digiserve/ab-user-manager:develop
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
