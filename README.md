@@ -10,52 +10,23 @@ You need git and Docker. Then clone this repo.
 
 ## Instructions
 
-### docker-compose.override.yml
-
-You will want to edit this to expose ports from the Docker containers
-to be accessible from the outside via your chosen external port numbers.
-
-#### **Required**
-
-The main user facing component using regular unencrypted http. Typically, there will
-be an nginx or apache layer on the host server that does the SSL/TLS on top of
-this.
-
-```yaml
-web:
-  ports:
-    - "[external port]:1337"
-```
-
-#### **Optional**
-
-MariaDB. Expose it for debugging data or doing mysqldump backups.
-
-```yaml
-db:
-  ports:
-    - "[external port]:3306"
-```
+There is a somewhat complicated system for storing config settings in V2. For 
+the production runtime, we try to consoloidate all of this into a single `.env`
+file. A sample is provided as `example.env`. Modify that to fit your own server
+setup, and save it as `.env`.
 
 ## Config
 
-There are two config files that the AppBuilder stack will rely on.
-Make sure to edit them with your own settings _before_ running the setup steps below.
+The most important setting to change is `MYSQL_PASSWORD`. This will be your
+DB root password. Choose something secure.
 
-1. **./config/local.js**
+Important note: When the MariaDB container starts up for the first
+time, it will set the database root password to the value you have
+specified. After that first time, changing this value will not affect the 
+already established password.
 
-   This the main AppBuilder config, determining which service are enabled and options for them.
+Make sure to add your own settings _before_ running the setup steps below.
 
-2. **./mysql/password**
-
-   This is a plaintext file. Its value will be used to fill
-   the connections section from `./config/local.js`. **This
-   will be your root DB password.** Choose something secure.
-
-   Important note: When the MariaDB container starts up for the first
-   time, it will set the database root password to the value you have
-   specified in this password file. After that first time, changing
-   this value will not affect the already established password.
 
 ## Data
 
@@ -65,10 +36,6 @@ Make sure to edit them with your own settings _before_ running the setup steps b
 
   The SQL files contained here will be used to populate the database for the
   first time.
-
-- **./data**
-
-  This is where AppBuilder will store any files uploaded by users.
   
 With V2, much of the config and data are actually saved onto Docker volumes, and are not directly binded to directories anymore. The data backup procedure is left as an exercise for the reader.
 
@@ -82,7 +49,9 @@ and other settings.
 In order to issue Docker commands, your user account must either have root
 access, or be part of the _docker_ group.
 
-The following steps need to be done with the same docker stack name you plan to run AppBuilder with (referred to here as `mystack`).
+The following steps need to be done with the same docker stack name you plan to
+run AppBuilder with (referred to here as `mystack`). This should match the 
+`STACKNAME` setting in your `.env` file.
 
 1. Turn on Docker Swarm if needed:
 

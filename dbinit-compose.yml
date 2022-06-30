@@ -3,7 +3,6 @@ volumes:
   mysql_config:
   mysql_data:
   mysql_key:
-  mysql_password:
 
 services:
   #db: use Maria DB as our backend DB
@@ -14,7 +13,7 @@ services:
     #ports:
     #  - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /secret/password
+      MYSQL_ROOT_PASSWORD: $MYSQL_PASSWORD # from .env
     volumes:
       #
       # Pull In our local ./mysql/init files to initialize the DB
@@ -29,7 +28,6 @@ services:
       - mysql_config:/etc/mysql/conf.d
       - mysql_data:/var/lib/mysql
       - mysql_key:/key
-      - mysql_password:/secret
     # on windows: use this command. (be sure to clear out mysql/data folder)
     command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
   #/db

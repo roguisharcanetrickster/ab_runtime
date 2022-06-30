@@ -4,13 +4,13 @@ services:
   #nginx setup
   web:
     ports:
-      - "80:80"
+      - "${WEB_PORT}:80"
       # - "443:443"
 
   # #db: use Maria DB as our backend DB
   db:
     ports:
-      - "3306:3306"
+      - "${DB_PORT}:3306"
 
   # #redis: use redis to allow cote services to find each other across a swarm
   # redis:

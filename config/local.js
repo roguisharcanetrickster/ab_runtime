@@ -23,7 +23,7 @@ module.exports = {
       "host": "db",
       "port": 3306,
       "user": "root",
-      "password": "root",
+      "password": process.env.MYSQL_PASSWORD,
       "database": "appbuilder"
     },
     "site": {
@@ -31,7 +31,7 @@ module.exports = {
       "host": "db",
       "port": 3306,
       "user": "root",
-      "password": "root",
+      "password": process.env.MYSQL_PASSWORD,
       "database": "appbuilder-admin"
     }
   },
