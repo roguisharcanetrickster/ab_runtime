@@ -1,6 +1,6 @@
 # AppBuilder (v2) Production Runtime
 
-The server side runtime for our AppBuilder project. This is meant for productions servers without root access. Recommend using [ab-cli](https://github.com/digi-serve/ab-cli) to install if possible.
+The server side runtime for our AppBuilder project. This is meant for productions servers without root access, or for servers using container systems other than Docker. Recommend using [ab-cli](https://github.com/digi-serve/ab-cli) to install if possible.
 
 This is for setting up an instance of the AppBuilder docker production stack on a server.
 
@@ -10,7 +10,7 @@ You need git and Docker. Then clone this repo.
 
 ## Instructions
 
-### docker-compose-override.yml
+### docker-compose.override.yml
 
 You will want to edit this to expose ports from the Docker containers
 to be accessible from the outside via your chosen external port numbers.
@@ -57,33 +57,20 @@ Make sure to edit them with your own settings _before_ running the setup steps b
    specified in this password file. After that first time, changing
    this value will not affect the already established password.
 
-   If your database is already set up, this password file must still be
-   entered correctly as it will automatically be replicated into the
-   `./config/local.js` file on every start up.
-
 ## Data
 
 ### Directories used for persistent storage
-
-- **./mysql/data**
-
-  This is where the MariaDB server will save its data. Do not manually edit
-  files from here unless you really know what you are doing. If you want to
-  start from scratch again and discard all existing data, you can delete the
-  contents of this directory.
 
 - **./mysql/init**
 
   The SQL files contained here will be used to populate the database for the
   first time.
 
-- **./redis/data**
-
-  This is where the redis server will save its data.
-
 - **./data**
 
   This is where AppBuilder will store any files uploaded by users.
+  
+With V2, much of the config and data are actually saved onto Docker volumes, and are not directly binded to directories anymore. The data backup procedure is left as an exercise for the reader.
 
 # Usage
 
@@ -144,6 +131,10 @@ The following steps need to be done with the same docker stack name you plan to 
 ```sh
 $ docker stack deploy -c docker-compose.yml -c docker-compose.override.yml mystack
 ```
+
+The default account credentials are:
+- email: `admin@example.com`
+- password: `admin`
 
 ## Stop AppBuilder
 
