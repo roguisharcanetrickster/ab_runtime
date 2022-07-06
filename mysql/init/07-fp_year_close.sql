@@ -111,8 +111,8 @@ BEGIN
    SET `Open` = 1, `Status` = "1592549785939"
    WHERE `FY Per` LIKE NEW_FP;
 
--- 3. Find M12 Balances with Account Number = 3500 or 3991
-   /* UPDATE GLSegment (Account 3991) */
+-- 3. Find M12 Balances with Account Number = 3500 an 3991
+   -- /* CREATE NEW GLSegment (Account 3500) */
    INSERT INTO `AB_AccountingApp_GLSegment`
       (`Balndx`,
       `FY Period`, `COA Num`, `RC Code`, 
@@ -192,10 +192,10 @@ BEGIN
       NEW_FP `FY Period`, -- Next Fiscal Month
       GL.`COA Num`, -- Same as Original Balance Record
       GL.`RC Code`,
-      IFNULL(GL.`Running Balance`, 0) `Starting Balance`,
+      0 `Starting Balance`,
       0 `Credit`,
       0 `Debit`,
-      IFNULL(GL.`Running Balance`, 0) `Running Balance`
+      0 `Running Balance`
       FROM
       `AB_AccountingApp_GLSegment` GL
       WHERE
