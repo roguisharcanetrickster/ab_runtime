@@ -14,6 +14,16 @@ module.exports = {
    // options or custom configuration specifically for your app (e.g. Stripe, Mailgun, etc.)
 
    /**
+    * CAS authentication
+    */
+   cas: {
+      enabled: process.env.CAS_ENABLED,
+      baseURL: process.env.CAS_BASE_URL,
+      uuidKey: process.env.CAS_UUID_KEY,
+      siteURL: process.env.SITE_URL
+   },
+
+   /**
     * datastores:
     * Sails style DB connection settings
     */
