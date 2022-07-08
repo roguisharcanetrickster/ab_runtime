@@ -17,7 +17,7 @@ module.exports = {
     * CAS authentication
     */
    cas: {
-      enabled: process.env.CAS_ENABLED,
+      enabled: process.env.CAS_ENABLED == "true" ? true : false,
       baseURL: process.env.CAS_BASE_URL,
       uuidKey: process.env.CAS_UUID_KEY,
       siteURL: process.env.SITE_URL
