@@ -24,6 +24,17 @@ module.exports = {
    },
 
    /**
+    * Okta authentication
+    */
+   okta: {
+      enabled: process.env.OKTA_ENABLED == "true" ? true : false,
+      domain: process.env.OKTA_DOMAIN,
+      clientID: process.env.OKTA_CLIENT_ID,
+      clientSecret: process.env.OKTA_CLIENT_SECRET,
+      siteURL: process.env.SITE_URL
+   },
+
+   /**
     * datastores:
     * Sails style DB connection settings
     */
