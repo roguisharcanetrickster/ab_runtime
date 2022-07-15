@@ -77,6 +77,10 @@ services:
       - CAS_BASE_URL=$CAS_BASE_URL
       - CAS_UUID_KEY=$CAS_UUID_KEY
       - SITE_URL=$SITE_URL
+      - OKTA_ENABLED=$OKTA_ENABLED
+      - OKTA_DOMAIN=$OKTA_DOMAIN
+      - OKTA_CLIENT_ID=$OKTA_CLIENT_ID
+      - OKTA_CLIENT_SECRET=$OKTA_CLIENT_SECRET
     volumes:
       - config:/app/config
       - files:/data
