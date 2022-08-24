@@ -364,10 +364,12 @@ CREATE TABLE `SITE_USER` (
   `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'NULL',
   `password` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `salt` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'NULL',
-  `email` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `authname` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `languageCode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `SITE_USER_username` (`username`),
+  UNIQUE KEY `SITE_USER_authname` (`authname`),
   KEY `SITE_USER_languageCode` (`languageCode`),
   CONSTRAINT `SITE_USER_languageCode` FOREIGN KEY (`languageCode`) REFERENCES `SITE_LANGUAGE` (`language_code`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
