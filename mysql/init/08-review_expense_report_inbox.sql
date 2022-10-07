@@ -82,12 +82,12 @@ BEGIN
                     WHERE `uuid` = USER_FORM_ID;
 
                     -- Remove the process INBOX
-                    -- DELETE FROM `site`.`User_UserForm`
-                    -- WHERE `UserForm` = USER_FORM_ID;
+                    DELETE FROM `AB_JOINMN_ProcessForm_USER_users`
+                    WHERE `ProcessForm` = USER_FORM_ID;
 
                     -- Remove the process INBOX
-                    -- DELETE FROM `site`.`Role_UserForm`
-                    -- WHERE `UserForm` = USER_FORM_ID;
+                    DELETE FROM `site`.`AB_JOINMN_ProcessForm_ROLE_roles`
+                    WHERE `ProcessForm` = USER_FORM_ID;
                 END IF;
             END IF;
 
