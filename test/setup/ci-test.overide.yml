@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.9"
 # Override file to make a stack testable, use UP.sh -t
 services:
 

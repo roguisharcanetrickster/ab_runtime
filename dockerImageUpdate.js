@@ -6,50 +6,55 @@
 // Use when a new docker image is available for our services.
 //
 const { exec } = require("child_process");
-// var path = require("path");
-// var fs = require("fs");
+// const path = require("path");
+// const fs = require("fs");
 
-// var cwd = process.cwd();
+// const cwd = process.cwd();
 
-var stack = " ab";
+const stack = " ab";
 
-var hashServices = {};
+const hashServices = {};
 // {hash}  { imagetag : {serviceData} }
 // collect a list of all the running images and their respective containers
 // {serviceData} : { ID, NAME, MODE, REPLICAS, IMAGE, PORTS }
 
-function runCommand(command) {
-   return new Promise((resolve, reject) => {
-      exec(command, function (error, stdout, stderr) {
+const wait = async (mS) => {
+   return new Promise((resolve) => {
+      setTimeout(() => {
+         resolve();
+      }, mS);
+   });
+};
+
+const runCommand = (command) =>
+   new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
          if (error) {
-            console.log(error.stack);
-            console.log("Error code: " + error.code);
-            console.log("Signal received: " + error.signal);
-            return reject(error);
+            reject(error);
+
+            return;
          }
+
          resolve({ /*error,*/ stdout, stderr });
       });
    });
-}
 
-async function getServices() {
-   var colCommand = "docker service ls";
-   var command = `docker service ls | grep ${stack}_`;
+const getServices = async () => {
+   const colCommand = "docker service ls";
+   const command = `docker service ls | grep ${stack}_`;
 
-   var columns = [];
+   const columns = [];
    // {array} the headers of the columns from the docker service ls command
 
    try {
-      var run = await runCommand(colCommand);
+      const run = await runCommand(colCommand);
+      const colLine = run.stdout.split("\n").shift();
 
-      var colLine = run.stdout.split("\n").shift();
       colLine.split(" ").map((part) => {
          if (part.length > 0) {
             columns.push(part);
          }
       });
-
-      // console.log("columns:", columns);
    } catch (err) {
       console.error("Error getting service columns:", err);
       throw err;
@@ -58,7 +63,7 @@ async function getServices() {
    try {
       let output = await runCommand(command);
 
-      var lines = output.stdout.split("\n");
+      const lines = output.stdout.split("\n");
       lines.map((line) => {
          let serviceHash = {};
          let index = 0;
@@ -81,81 +86,137 @@ async function getServices() {
    } catch (err) {
       console.error(err);
    }
-}
+};
 
-async function updateImage(services) {
-   if (services.length == 0) {
-      return;
-   } else {
-      var service = services.shift();
-      var command = `docker image pull ${service} `;
+const updateImage = async (services) => {
+   if (!services.length) return;
 
-      console.log(`... ${command}`);
-      try {
-         var response = await runCommand(command);
-         if (response.error) {
-            throw response.error;
-         }
+   const pendings = [];
 
-         var imageCheck = `docker image ls | grep "${service.split(":")[0]}"`;
-         var imageStatus = await runCommand(imageCheck);
-         console.log(imageStatus.stdout);
-         console.log();
+   services.forEach((e) => {
+      const command = `docker pull ${e} && echo "" && docker image ls | grep "${
+         e.split(":")[0]
+      }"`;
 
-         await updateImage(services);
-      } catch (err) {
-         console.error("   *** Error pulling service :", service, err);
-         throw err;
-      }
+      pendings.push(runCommand(command));
+   });
+
+   const results = await Promise.all(pendings);
+
+   const response = {
+      stdout: "",
+      stderr: "",
+   };
+
+   results.forEach((e) => {
+      response.stdout = `${response.stdout}${e.stdout}\n`;
+
+      if (e.stderr) response.stderr = `${response.stderr}${e.stderr}\n`;
+   });
+
+   return response;
+};
+
+const updateConfig = async () => {
+   const response = await runCommand(
+      `docker stack deploy -c config-compose.yml${stack}`
+   );
+
+   await wait(5000);
+
+   while (
+      !(
+         await runCommand(
+            `docker service logs${stack}_config | tail -1 | grep "... config preparation complete" || true`
+         )
+      ).stdout
+   )
+      await wait(1000);
+
+   return response;
+};
+
+const updateDockerCompose = async (services) => {
+   if (!services.length) throw new Error("There are no Docker services up.");
+
+   const response = await runCommand(
+      `docker stack deploy -c docker-compose.yml -c docker-compose.override.yml${stack}`
+   );
+
+   return response;
+};
+
+const cleanOldImages = async (services) => {
+   if (!services.length) return;
+
+   const pendings = [];
+
+   services.forEach((e) => {
+      const command = `docker rmi $(docker images | grep "${e}" | grep "<none>" | awk '{print $3}') -f | true`;
+
+      pendings.push(runCommand(command));
+   });
+
+   const results = await Promise.all(pendings);
+
+   const response = {
+      stdout: "",
+      stderr: "",
+   };
+
+   results.forEach((e) => {
+      response.stdout = `${response.stdout}${e.stdout}\n`;
+
+      if (e.stderr) response.stderr = `${response.stderr}${e.stderr}\n`;
+   });
+
+   return response;
+};
+
+const processHandler = async (processName, callbackFunction, ...parameter) => {
+   if (!processName)
+      throw Error('The parameter "processName" should be "string" type');
+
+   if (!callbackFunction)
+      throw Error('The parameter "callbackFunction" should be "function" type');
+
+   console.log(`${processName}:`);
+   console.log();
+
+   const response = await callbackFunction(...parameter);
+
+   console.log(response.stdout);
+
+   if (response.stderr) console.log(response.stderr);
+
+   console.log();
+};
+
+const Do = async () => {
+   try {
+      const services = await getServices();
+      const listServices = Object.keys(services);
+
+      await processHandler("Updating Images", updateImage, listServices);
+
+      await processHandler("Reseting config", updateConfig);
+
+      await wait(30000);
+
+      await processHandler(
+         "Updating services",
+         updateDockerCompose,
+         listServices
+      );
+
+      await processHandler("Cleaning old images", cleanOldImages, listServices);
+
+      console.log("... done");
+      console.log();
+   } catch (error) {
+      console.error(error);
+      console.error();
    }
-}
+};
 
-async function updateService(services) {
-   if (services.length == 0) {
-      return;
-   } else {
-      var service = services.shift();
-      var serviceData = hashServices[service];
-      if (!serviceData) {
-         var err = new Error(`No service data found for ${service}`);
-         console.error(err);
-         throw err;
-      }
-      var serviceName = serviceData["NAME"];
-      if (!serviceName) {
-         var err2 = new Error(`No service name foud for ${service}`);
-         console.error(err2);
-         console.error(serviceName);
-         throw err2;
-      }
-
-      var command = `docker service update --image ${service} ${serviceName}`;
-
-      console.log(`... ${command}`);
-      try {
-         /* var response = */ await runCommand(command);
-         await updateService(services);
-      } catch (err) {
-         console.error("   *** Error updating service :", service, err);
-         throw err;
-      }
-   }
-}
-
-async function Do() {
-   var services = await getServices();
-
-   console.log();
-   console.log("Updating Images:");
-   var listServices = Object.keys(services);
-   await updateImage(listServices);
-
-   console.log();
-   console.log("Updating running services:");
-   listServices = Object.keys(services);
-   await updateService(listServices);
-
-   console.log();
-   console.log("... done");
-}
 Do();

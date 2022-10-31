@@ -3,7 +3,7 @@
 # this stack will initialize our data volumes with the various current 
 # configuration files of our install.
 
-version: "3.2"
+version: "3.9"
 volumes:
   config:
   mysql_config:
