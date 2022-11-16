@@ -22,17 +22,19 @@ jobs:
               runtime: ${{ github.sha }}
 
          - name: Check out kitchen-sink tests
-           uses: actions/checkout@v2
+           uses: actions/checkout@v3
            with:
               repository: digi-serve/kitchensink_app
               path: ab/test/e2e/cypress/integration/kitchensink_app
-              
-         # Docker's daemon couldn't find the network "ab_default" so the services aren't created
-         - name: Restart Docker
-           run: sudo systemctl restart docker
 
          - name: Deploy Stack
            run: ./UP.sh -t -q
+           working-directory: ./ab
+
+         # These next steps are to save our ablogs to file
+         - run: npm install pm2@latest -g
+         - name: Save Logs
+           run: pm2 start ./logs.js -- --toFile logs/ABServices.log
            working-directory: ./ab
 
          - name: Run Cypress Tests
@@ -45,3 +47,15 @@ jobs:
               wait-on-timeout: 300
               install: false
               env: stack=ab
+
+         - uses: actions/upload-artifact@v2
+           if: failure()
+           with:
+              name: cypress-screenshots
+              path: ./ab/test/e2e/cypress/screenshots
+
+         - uses: actions/upload-artifact@v2
+           if: failure()
+           with:
+              name: ABServices.log
+              path: ./ab/logs/ABServices.log

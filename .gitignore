@@ -25,6 +25,8 @@ mysql/data/**
 redis/data/**
 !redis/data/.gitkeep
 
+logs
+
 ################################################
 # Miscellaneous
 #
