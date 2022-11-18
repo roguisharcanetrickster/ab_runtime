@@ -411,6 +411,7 @@ LOCK TABLES `SITE_ROLE` WRITE;
 
 INSERT INTO `SITE_ROLE` (`uuid`, `created_at`, `updated_at`, `properties`, `translations`, `Default Role`)
 VALUES
+  ('320ef94a-73b5-476e-9db4-c08130c64bb8','2022-11-15 05:02:54','2022-11-15 05:02:54',NULL,'[{\"language_code\":\"en\",\"name\":\"Switcheroo\",\"description\":\"Allow the user to impersonate other users.\"}]',0),
   ('dd6c2d34-0982-48b7-bc44-2456474edbea','2020-05-13 09:48:10','2020-05-13 09:50:06',NULL,'[{\"language_code\":\"en\",\"name\":\"System Admin\",\"description\":\"Full Access\"}]',0),
   ('6cc04894-a61b-4fb5-b3e5-b8c3f78bd331','2021-09-10 06:07:44','2021-09-10 06:07:44',NULL,'[{\"language_code\":\"en\",\"name\":\"System Builder\",\"description\":\"Able to edit System Objects\"}]',0),
   ('e1be4d22-1d00-4c34-b205-ef84b8334b19','2021-09-21 05:36:06','2021-09-21 05:36:06',NULL,'[{\"language_code\":\"en\",\"name\":\"Builder\",\"description\":\"Able to edit Applications\"}]',0),
