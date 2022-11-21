@@ -438,6 +438,7 @@ CREATE TABLE `SITE_ROWLOG` (
   `row` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `level` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `usernameReal` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
