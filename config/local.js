@@ -144,6 +144,21 @@ module.exports = {
    /* end process_manager */
 
    /**
+    * relay
+    */
+   relay: {
+      enable: process.env.RELAY_ENABLED == "true" ? true : false,
+      mcc: {
+         enabled: process.env.RELAY_ENABLED == "true" ? true : false,
+         url: process.env.RELAY_SERVER_URL,
+         accessToken: process.env.RELAY_SERVER_TOKEN,
+         pollFrequency: process.env.RELAY_POLL_FREQUENCY ?? 1000 * 5, // 5s
+         maxPacketSize: process.env.RELAY_MAX_PACKET_SIZE ?? 1024 * 1024,
+      },
+      pwaURL: process.env.PWA_URL,
+   },
+
+   /**
     * tenant_manager
     * manages the different tenants in our system
     */
