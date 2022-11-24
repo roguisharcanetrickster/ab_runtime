@@ -81,6 +81,7 @@ services:
       - OKTA_DOMAIN
       - OKTA_CLIENT_ID
       - OKTA_CLIENT_SECRET
+      - RELAY_ENABLED
       - RELAY_SERVER_TOKEN
     volumes:
       - config:/app/config
