@@ -72,15 +72,17 @@ services:
     image: docker.io/digiserve/ab-api-sails:$AB_API_SAILS_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
-      - CAS_ENABLED=$CAS_ENABLED
-      - CAS_BASE_URL=$CAS_BASE_URL
-      - CAS_UUID_KEY=$CAS_UUID_KEY
-      - SITE_URL=$SITE_URL
-      - OKTA_ENABLED=$OKTA_ENABLED
-      - OKTA_DOMAIN=$OKTA_DOMAIN
-      - OKTA_CLIENT_ID=$OKTA_CLIENT_ID
-      - OKTA_CLIENT_SECRET=$OKTA_CLIENT_SECRET
+      - MYSQL_PASSWORD # from .env
+      - CAS_ENABLED
+      - CAS_BASE_URL
+      - CAS_UUID_KEY
+      - SITE_URL
+      - OKTA_ENABLED
+      - OKTA_DOMAIN
+      - OKTA_CLIENT_ID
+      - OKTA_CLIENT_SECRET
+      - RELAY_ENABLED
+      - RELAY_SERVER_TOKEN
     volumes:
       - config:/app/config
       - files:/data
@@ -95,7 +97,7 @@ services:
     image: docker.io/digiserve/ab-appbuilder:$AB_APPBUILDER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
@@ -129,7 +131,7 @@ services:
     image: docker.io/digiserve/ab-custom-reports:$AB_CUSTOM_REPORTS_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
@@ -143,7 +145,7 @@ services:
     image: docker.io/digiserve/ab-definition-manager:$AB_DEFINITION_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
@@ -157,7 +159,7 @@ services:
     image: docker.io/digiserve/ab-file-processor:$AB_FILE_PROCESSOR_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
       - files:/data
@@ -172,7 +174,7 @@ services:
     image: docker.io/digiserve/ab-log-manager:$AB_LOG_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
@@ -186,7 +188,7 @@ services:
     image: docker.io/digiserve/ab-notification-email:$AB_NOTIFICATION_EMAIL_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
@@ -200,7 +202,7 @@ services:
     image: docker.io/digiserve/ab-process-manager:$AB_PROCESS_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
@@ -214,7 +216,13 @@ services:
     image: docker.io/digiserve/ab-relay:$AB_RELAY_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
+      - RELAY_ENABLED
+      - RELAY_SERVER_URL
+      - RELAY_SERVER_TOKEN
+      - RELAY_POLL_FREQUENCY
+      - RELAY_MAX_PACKET_SIZE
+      - PWA_URL
     hostname: relay
     volumes:
       - config:/app/config
@@ -229,7 +237,7 @@ services:
     image: docker.io/digiserve/ab-tenant-manager:$AB_TENANT_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
@@ -243,7 +251,7 @@ services:
     image: docker.io/digiserve/ab-user-manager:$AB_USER_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD # from .env
     volumes:
       - config:/app/config
     depends_on:
