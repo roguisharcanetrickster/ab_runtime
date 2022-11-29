@@ -1,5 +1,12 @@
 version: "3.2"
 
+deploy:
+  restart_policy:
+    condition: on-failure
+    delay: 3s
+    max_attempts: 5
+    window: 60s
+
 volumes:
   config:
   files:
@@ -94,6 +101,13 @@ services:
 
   #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
   appbuilder:
+    restart: always
+    deploy:
+      restart_policy:
+        condition: unless-stopped
+        delay: 3s
+        max_attempts: 5
+        window: 60s
     image: docker.io/digiserve/ab-appbuilder:$AB_APPBUILDER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
@@ -132,6 +146,7 @@ services:
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
       - MYSQL_PASSWORD # from .env
+      - CUSTOM_REPORTS_ENABLED
     volumes:
       - config:/app/config
     depends_on:
@@ -175,6 +190,10 @@ services:
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
       - MYSQL_PASSWORD # from .env
+      - SENTRY_ENABLED
+      - SENTRY_DSN
+      - SENTRY_SAMPLE_RATE
+      - SENTRY_SERVER_NAME
     volumes:
       - config:/app/config
     depends_on:
