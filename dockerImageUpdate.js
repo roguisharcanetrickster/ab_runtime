@@ -12,6 +12,7 @@ const { exec } = require("child_process");
 // const cwd = process.cwd();
 
 const stack = " ab";
+const stackNoSpace = stack.replace(" ", "");
 
 const hashServices = {};
 // {hash}  { imagetag : {serviceData} }
@@ -38,6 +39,14 @@ const runCommand = (command) =>
          resolve({ /*error,*/ stdout, stderr });
       });
    });
+
+const dbMigrate = async (branch) => {
+   const response = await runCommand(
+      `docker run -v ${__dirname}/config/local.js:/app/config/local.js --network=${stackNoSpace}_default digiserve/ab-migration-manager:${branch} node app.js`
+   );
+
+   return response;
+};
 
 const getServices = async () => {
    const colCommand = "docker service ls";
@@ -197,9 +206,22 @@ const Do = async () => {
       const services = await getServices();
       const listServices = Object.keys(services);
 
+      // our migration image also needs to be updated:
+      let branchMigrate = "master";
+      if (listServices.length) {
+         let ab = listServices.find((s) => s.indexOf("appbuilder") > -1);
+         if (ab) {
+            branchMigrate = ab.split(":")[1];
+            if (!branchMigrate) branchMigrate = "master";
+         }
+      }
+      listServices.unshift(`digiserve/ab-migration-manager:${branchMigrate}`);
+
       await processHandler("Updating Images", updateImage, listServices);
 
       await processHandler("Reseting config", updateConfig);
+
+      await processHandler("DB Migrations", dbMigrate, branchMigrate);
 
       await wait(30000);
 
