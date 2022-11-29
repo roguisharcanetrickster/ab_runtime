@@ -45,7 +45,8 @@ module.exports = {
       "port": 3306,
       "user": "root",
       "password": process.env.MYSQL_PASSWORD,
-      "database": "appbuilder"
+      "database": "appbuilder",
+      "poolmax": 40
     },
     "site": {
       "adapter": "sails-mysql",
@@ -93,6 +94,15 @@ module.exports = {
   },
   /* end bot_manager */
 
+   
+   /**
+    * custom_reports
+    */
+   custom_reports: {
+      enable: process.env.CUSTOM_REPORTS_ENABLED == "true" ? true : false,
+   },
+   /* end custom_reports */
+   
    /**
     * definition_manager
     * service for managing our multi-tenant aware AB requests
@@ -120,6 +130,13 @@ module.exports = {
     */
    log_manager: {
       enable: true,
+      sentry: process.env.SENTRY_ENABLED == "true" ? {
+         dsn: process.env.SENTRY_DSN,
+         // We recommend adjusting this value in production, or using tracesSampler
+         // for finer control
+         tracesSampleRate: Number(process.env.SENTRY_SAMPLE_RATE ?? 1.0),
+         serverName: process.env.SENTRY_SERVER_NAME,
+      } : undefined,
    },
    /* end log_manager */
 
