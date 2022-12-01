@@ -9,6 +9,10 @@ volumes:
   mysql_password:
   nginx_etc:
   redis_data:
+    
+networks:
+  default:
+    attachable: true
 
 services:
   #nginx setup
