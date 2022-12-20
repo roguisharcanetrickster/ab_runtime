@@ -24,6 +24,9 @@
     "test:down": "appbuilder test down ab",
     "test:wait": "appbuilder test waitBoot ab",
     "test:e2e": "npx cypress run --reporter dot --project ./test/e2e",
+    "test:e2e:ab-runtime": "npx cypress run --config-file cypress.ab_runtime.json --reporter dot --project ./test/e2e",
+    "test:e2e:app": "npx cypress run --config-file cypress.app.json --reporter dot --project ./test/e2e",
+    "test:e2e:ab-designer": "npx cypress run --config-file cypress.plugin.ab_designer.json --reporter dot --project ./test/e2e",
     "test:reset": "bash testReset.sh"
   }
 }
