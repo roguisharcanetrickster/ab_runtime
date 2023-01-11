@@ -1,12 +1,5 @@
 version: "3.2"
 
-deploy:
-  restart_policy:
-    condition: on-failure
-    delay: 3s
-    max_attempts: 5
-    window: 60s
-
 volumes:
   config:
   files:
@@ -91,6 +84,9 @@ services:
       - RELAY_ENABLED
       - RELAY_SERVER_TOKEN
     volumes:
+      - type: bind
+        source: ./logs/appbuilder/
+        target: /var/log/appbuilder/
       - config:/app/config
       - files:/data
     depends_on:
@@ -104,7 +100,6 @@ services:
     restart: always
     deploy:
       restart_policy:
-        condition: unless-stopped
         delay: 3s
         max_attempts: 5
         window: 60s

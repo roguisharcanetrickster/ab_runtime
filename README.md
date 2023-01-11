@@ -11,7 +11,7 @@ You need git and Docker. Then clone this repo.
 ## Instructions
 
 There is a somewhat complicated system for storing config settings in V2. For 
-the production runtime, we try to consoloidate all of this into a single `.env`
+the production runtime, we try to consolidate all of this into a single `.env`
 file. A sample is provided as `example.env`. Modify that to fit your own server
 setup, and save it as `.env`.
 
@@ -108,7 +108,7 @@ The default account credentials are:
 ## Stop AppBuilder
 
 ```sh
-$ docker stack rm mydtack
+$ docker stack rm mystack
 ```
 
 ## View console
