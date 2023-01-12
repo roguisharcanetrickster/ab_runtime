@@ -79,6 +79,9 @@ services:
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
+      - type: bind
+        source: ./logs/appbuilder/
+        target: /var/log/appbuilder/
       - config:/app/config
       - files:/data
     depends_on:

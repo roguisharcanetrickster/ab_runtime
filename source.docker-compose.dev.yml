@@ -84,6 +84,9 @@ services:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
       - type: bind
+        source: ./logs/appbuilder/
+        target: /var/log/appbuilder/
+      - type: bind
         source: ./developer/api_sails
         target: /app
       - config:/app/config
