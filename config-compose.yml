@@ -14,8 +14,6 @@ services:
   #config: simply exists to pull in the config/local.js into our config volume
   config:
     image: digiserve/ab-config:develop
-    security_opt:
-      label: disable
     environment:
       - AB_CONFIG_INSTALL=true
     volumes:

@@ -8,8 +8,6 @@ services:
   #db: use Maria DB as our backend DB
   db:
     image: mariadb
-    security_opt:
-      label: disable
     #ports:
     #  - "3306:3306"
     environment:
