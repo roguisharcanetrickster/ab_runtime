@@ -25,7 +25,10 @@ mysql/data/**
 redis/data/**
 !redis/data/.gitkeep
 
-logs
+logs/*
+!/logs/README.md
+!/logs/appbuilder/
+!/logs/fail2ban/
 
 ################################################
 # Miscellaneous
