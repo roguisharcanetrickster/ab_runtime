@@ -5,6 +5,10 @@ volumes:
   mysql_key:
   mysql_password:
 
+networks:
+  default:
+    attachable: true
+
 services:
   #db: use Maria DB as our backend DB
   db:
