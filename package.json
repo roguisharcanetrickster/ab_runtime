@@ -1,9 +1,9 @@
 {
   "devDependencies": {
-    "cypress": "^8.0.0",
+    "cypress": "^12.5.1",
     "eslint": "^8.27.0",
-    "eslint-plugin-cypress": "^2.12.1",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-prettier": "^4.2.1"
   },
   "dependencies": {
