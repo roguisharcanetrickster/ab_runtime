@@ -13,4 +13,8 @@ then
 	echo ""
 else
 	docker exec $ID_Service bash reset.sh
+	docker run \
+        -v ${STACK}_config:/app/config/ \
+        --network=${STACK}_default \
+        digiserve/ab-migration-manager:master node app.js
 fi
