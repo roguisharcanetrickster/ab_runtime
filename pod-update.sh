@@ -18,7 +18,7 @@ podman image pull \
     docker.io/digiserve/ab-file-processor:${AB_FILE_PROCESSOR_VERSION} \
     docker.io/digiserve/ab-log-manager:${AB_LOG_MANAGER_VERSION} \
     docker.io/digiserve/ab-notification-email:${AB_NOTIFICATION_EMAIL_VERSION} \
-    docker.io/digiserve/ab-process-manager:${AB_CPROCESS_MANAGER_VERSION} \
+    docker.io/digiserve/ab-process-manager:${AB_PROCESS_MANAGER_VERSION} \
     docker.io/digiserve/ab-relay:${AB_RELAY_VERSION} \
     docker.io/digiserve/ab-tenant-manager:${AB_TENANT_MANAGER_VERSION} \
     docker.io/digiserve/ab-user-manager:${AB_USER_MANAGER_VERSION} \
