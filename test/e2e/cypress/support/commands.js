@@ -23,15 +23,14 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-const Config = require("../../../setup/config.js");
 
 Cypress.Commands.add("AuthLogin", () => {
    cy.session("admin", () => {
-      cy.log(`Logging in as ${Config.user.email}`);
+      cy.log(`Logging in as ${Cypress.env("USER_EMAIL")}`);
       cy.request("POST", "/auth/login", {
-         tenant: Config.tenant,
-         email: Config.user.email,
-         password: Config.user.password,
+         tenant: Cypress.env("TENANT"),
+         email: Cypress.env("USER_EMAIL"),
+         password: Cypress.env("USER_PASSWORD"),
       })
          .its("body")
          .as("currentUser");
@@ -39,17 +38,17 @@ Cypress.Commands.add("AuthLogin", () => {
 });
 
 Cypress.Commands.add("ResetDB", () => {
-   const stack = Cypress.env("stack");
+   const stack = Cypress.env("STACK");
 
    // Clear the Physical DB
    cy.exec(`npm run test:reset ${stack}`);
 
    // Have the running services clear their definitions.
-   cy.request("POST", "/test/reset", { tenant: Config.tenant });
+   cy.request("POST", "/test/reset", { tenant: Cypress.env("TENANT") });
 });
 
 Cypress.Commands.add("RunSQL", (folder, files, fail = true) => {
-   const stack = Cypress.env("stack");
+   const stack = Cypress.env("STACK");
    if (typeof files === "string") {
       files = [files];
    }
@@ -67,9 +66,11 @@ Cypress.Commands.add("RunSQL", (folder, files, fail = true) => {
          cy.exec(`docker cp ${path} ${containerId}:/sql/${file}`, {
             log: false,
          });
+         const user = Cypress.env("DB_USER");
+         const password = Cypress.env("DB_PASSWORD");
          cy.exec(
-            /* eslint-disable-next-line no-useless-escape*/
-            `docker exec ${containerId} bash -c "mysql -u root -proot \"appbuilder-admin\" < ./sql/${file}"`,
+            /* eslint-disable no-useless-escape*/
+            `docker exec ${containerId} bash -c "mysql -u ${user} -p${password} \"appbuilder-admin\" < ./sql/${file}"`,
             { failOnNonZeroExit: fail }
          );
          cy.exec(`docker exec ${containerId} bash -c "rm ./sql/${file}"`, {

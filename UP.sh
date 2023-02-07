@@ -1,4 +1,8 @@
 #!/bin/bash
+# Import ENV variables
+set -o allexport
+source .env
+set +o allexport
 Dev=
 Test=
 Quiet=
