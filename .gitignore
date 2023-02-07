@@ -31,6 +31,7 @@ logs/*
 !/logs/fail2ban/
 
 /test/e2e/cypress/e2e/**/*
+!/test/e2e/cypress/e2e/*.js
 !/test/e2e/cypress/e2e/plugins/
 !/test/e2e/cypress/e2e/test_import/
 
