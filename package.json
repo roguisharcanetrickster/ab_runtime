@@ -25,9 +25,9 @@
     "test:down": "appbuilder test down ab",
     "test:wait": "appbuilder test waitBoot ab",
     "test:e2e": "env-cmd cypress run --reporter dot --project ./test/e2e",
-    "test:e2e:ab-runtime": "env-cmd cypress run --config-file cypress.ab_runtime.json --reporter dot --project ./test/e2e",
-    "test:e2e:app": "env-cmd cypress run --config-file cypress.app.json --reporter dot --project ./test/e2e",
-    "test:e2e:ab-designer": "env-cmd cypress run --config-file cypress.plugin.ab_designer.json --reporter dot --project ./test/e2e",
+    "test:e2e:ab-runtime": "env-cmd cypress run --config-file cypress.ab_runtime.mjs --reporter dot --project ./test/e2e",
+    "test:e2e:app": "env-cmd cypress run --config-file cypress.app.mjs --reporter dot --project ./test/e2e",
+    "test:e2e:ab-designer": "env-cmd cypress run --config-file cypress.plugin.ab_designer.mjs --reporter dot --project ./test/e2e",
     "test:reset": "bash testReset.sh"
   }
 }
