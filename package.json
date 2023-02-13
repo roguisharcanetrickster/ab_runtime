@@ -23,7 +23,7 @@
     "test": "appbuilder test setup ab && npm run test:wait &&  npm run test:e2e",
     "test:boot": "env-cmd docker stack deploy -c docker-compose.dev.yml -c ./test/setup/test-compose.yml test_130",
     "test:down": "appbuilder test down ab",
-    "test:wait": "appbuilder test waitBoot ab",
+    "test:wait": "env-cmd appbuilder test waitBoot ab",
     "test:e2e": "env-cmd cypress run --reporter dot --project ./test/e2e",
     "test:e2e:ab-runtime": "env-cmd cypress run --config-file cypress.ab_runtime.mjs --reporter dot --project ./test/e2e",
     "test:e2e:app": "env-cmd cypress run --config-file cypress.app.mjs --reporter dot --project ./test/e2e",
