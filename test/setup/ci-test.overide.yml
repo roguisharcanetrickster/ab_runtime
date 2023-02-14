@@ -33,7 +33,6 @@ services:
       - AB_TESTING=true
       # AB_TESTING is an environment variable that opens up some
       # API routes only available in our testing environment.
-      - NODE_ENV=test
     volumes:
       - type: bind
         source: ./test/e2e/cypress/e2e
