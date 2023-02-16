@@ -5,6 +5,10 @@ services:
   db:
     # NOTE: this file will be pulled into the compose files from the ROOT
     # directory, so paths must be specified from there:
+    environment: 
+      - TENANT=$CYPRESS_TENANT
+      - DB_USER=$CYPRESS_DB_USER
+      - DB_PASSWORD=$CYPRESS_DB_PASSWORD
     volumes:
       - type: bind
         source: ./test/setup/reset.sh
@@ -31,5 +35,5 @@ services:
       # API routes only available in our testing environment.
     volumes:
       - type: bind
-        source: ./test/e2e/cypress/integration
+        source: ./test/e2e/cypress/e2e
         target: /app/imports

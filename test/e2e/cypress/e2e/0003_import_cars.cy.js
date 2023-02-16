@@ -1,5 +1,3 @@
-const Common = require("../../../setup/common.js");
-
 // Don't stop tests on uncaught errors
 Cypress.on("uncaught:exception", () => false);
 
@@ -8,11 +6,11 @@ var isAppImported = false;
 
 describe("CARS:", () => {
    before(() => {
-      Common.ResetDB(cy);
+      cy.ResetDB();
    });
 
    beforeEach(() => {
-      Common.AuthLogin(cy);
+      cy.AuthLogin();
       if (!isAppImported) {
          isAppImported = true;
          cy.request("POST", "/test/import", {

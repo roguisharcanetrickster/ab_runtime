@@ -1,13 +1,10 @@
-const Config = require("../../../setup/config.js");
-const Common = require("../../../setup/common.js");
-
 // Don't stop tests on uncaught errors
 Cypress.on("uncaught:exception", () => false);
 
 describe("Login Page", () => {
    before(() => {
       // make sure we have a clean slate before continuing.
-      Common.ResetDB(cy);
+      cy.ResetDB();
    });
 
    beforeEach(() => {
@@ -16,7 +13,11 @@ describe("Login Page", () => {
 
    // 1) Successful Login
    it("loads the login page", () => {
-      Login(Config.tenant, Config.user.email, Config.user.password);
+      Login(
+         Cypress.env("TENANT"),
+         Cypress.env("USER_EMAIL"),
+         Cypress.env("USER_PASSWORD")
+      );
 
       // warning should NOT exist
       cy.get("[data-cy=portal_auth_login_form_errormsg]").should("not.exist");
@@ -27,7 +28,11 @@ describe("Login Page", () => {
 
    // 2) Successful Logout
    it("Logging out, returns you to the Login Form:", () => {
-      Login(Config.tenant, Config.user.email, Config.user.password);
+      Login(
+         Cypress.env("TENANT"),
+         Cypress.env("USER_EMAIL"),
+         Cypress.env("USER_PASSWORD")
+      );
       cy.get("[data-cy=user_icon]").should("be.visible").click();
       cy.get("[data-cy=user_logout]").should("be.visible").click();
       cy.get("[data-cy=portal_auth_login_form_tenantList]").should(
@@ -37,7 +42,11 @@ describe("Login Page", () => {
 
    // 3) Login Error Messages
    it("Displays Error Message when invalid Username / Password", () => {
-      Login(Config.tenant, `a${Config.user.email}`, Config.user.password);
+      Login(
+         Cypress.env("TENANT"),
+         `a${Cypress.env("USER_EMAIL")}`,
+         Cypress.env("USER_PASSWORD")
+      );
 
       // now the warning should exist
       cy.get("[data-cy=portal_auth_login_form_errormsg]").should("exist");

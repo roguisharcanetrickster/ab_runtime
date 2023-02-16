@@ -1,9 +1,0 @@
-{
-   "baseUrl": "http://localhost:8088",
-   "defaultCommandTimeout": 12000,
-   "env": { "stack": "test_ab" },
-   "ignoreTestFiles": "**/test_cases/*.js",
-   "responseTimeout": 60000,
-   "testFiles": "**/*.js",
-   "video": false
-}

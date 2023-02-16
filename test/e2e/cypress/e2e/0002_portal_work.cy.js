@@ -1,12 +1,10 @@
-const Common = require("../../../setup/common.js");
-
 // var loggedInCookie = null;
 // Don't stop tests on uncaught errors
 Cypress.on("uncaught:exception", () => false);
 
 describe("portal_work:", () => {
    beforeEach(() => {
-      Common.AuthLogin(cy);
+      cy.AuthLogin();
       cy.visit("/");
    });
 
