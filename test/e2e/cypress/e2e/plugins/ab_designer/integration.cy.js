@@ -1,7 +1,5 @@
 import path from "path";
 
-const Common = require("../../../../../setup/common.js");
-
 const appclicationDefault = {
    name: "TestApp",
    icon: "fa-500px",
@@ -38,17 +36,17 @@ const navigateABDesignerApplication = (cy, name) => {
 
 describe("AB Designer:", () => {
    before(() => {
-      Common.ResetDB(cy);
+      cy.ResetDB();
+   });
+
+   beforeEach(() => {
+      cy.AuthLogin();
+      cy.visit("/");
+      navigateABDesigner(cy);
    });
 
    describe("Main page", () => {
       describe("New application", () => {
-         beforeEach(() => {
-            Common.AuthLogin(cy);
-            cy.visit("/");
-            navigateABDesigner(cy);
-         });
-
          it("Add new application", () => {
             cy.get('[data-cy="abd_choose_list_buttonCreateNewApplication"]')
                .should("exist")
@@ -187,7 +185,7 @@ describe("AB Designer:", () => {
    describe("Application page", () => {
       before(() => {
          // Delete this if the export is passed.
-         Common.AuthLogin(cy);
+         cy.AuthLogin();
          cy.visit("/");
          navigateABDesigner(cy);
          cy.get('[data-cy="abd_choose_list_buttonCreateNewApplication"]')
@@ -234,7 +232,9 @@ describe("AB Designer:", () => {
             .find(".fa-arrow-left")
             .should("exist")
             .click();
+      });
 
+      beforeEach(() => {
          navigateABDesignerApplication(cy, appclicationDefault.name);
       });
 
@@ -260,8 +260,10 @@ describe("AB Designer:", () => {
          it("Warnings", () => {
             cy.get('[view_id="ui_work_object_list_list"]')
                .contains("test_object")
+               .as("test_object")
                .find(".fa-warning.pulseLight.smalltext")
                .should("be.visible");
+            cy.get("@test_object").click();
             cy.get(
                '[view_id="abd_work_object_workspace_view_warnings_buttonWarning"]'
             )
@@ -302,7 +304,7 @@ describe("AB Designer:", () => {
                .should("exist");
          });
 
-         it("Exclude", () => {
+         it("Exclude & Include", () => {
             cy.get('[view_id="ui_work_object_list_list"]')
                .contains("test_object_rename")
                .as("testObjectRename")
@@ -326,14 +328,6 @@ describe("AB Designer:", () => {
                '[view_id="ui_work_object_list_newObject_import_objectList"]'
             )
                .should("exist")
-               .contains("test_object_rename")
-               .should("exist");
-         });
-
-         it("Import", () => {
-            cy.get(
-               '[view_id="ui_work_object_list_newObject_import_objectList"]'
-            )
                .contains("test_object_rename")
                .should("exist")
                .click({ force: true });
