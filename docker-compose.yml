@@ -8,6 +8,7 @@ volumes:
   mysql_key:
   nginx_etc:
   redis_data:
+  clamav:
 
 services:
 
@@ -170,9 +171,11 @@ services:
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
       - MYSQL_PASSWORD # from .env
+      - CLAMAV_ENABLED
     volumes:
       - config:/app/config
       - files:/data
+      - clamav:/var/lib/clamav
     depends_on:
       - redis
       - config
