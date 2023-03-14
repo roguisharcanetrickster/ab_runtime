@@ -9,6 +9,7 @@ volumes:
   mysql_password:
   nginx_etc:
   redis_data:
+  clamav:
     
 networks:
   default:
@@ -154,9 +155,12 @@ services:
     image: digiserve/ab-file-processor:<%=tag%>
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
+      # Set CLAMAV_ENAMED=true to enable. Disabled by default.
+      - CLAMAV_ENABLED
     volumes:
       - config:/app/config
       - files:/data
+      - clamav:/var/lib/clamav
     depends_on:
       - redis
       - config
