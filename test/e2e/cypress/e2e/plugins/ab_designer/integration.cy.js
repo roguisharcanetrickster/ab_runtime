@@ -275,7 +275,7 @@ describe("AB Designer:", () => {
                '[view_id="abd_work_object_workspace_view_warnings_warnings"]'
             )
                .should("be.visible")
-               .and("contain", "I got no fields.");
+               .and("contain", "has no fields");
             cy.get(
                '[view_id="abd_work_object_workspace_view_warnings_buttonWarningHide"]'
             )
