@@ -111,7 +111,10 @@ describe("AB Designer:", () => {
                .find(".fa-cog")
                .should("exist")
                .click();
-            cy.contains("Edit").should("be.visible").click();
+            cy.get('[view_id="abd_common_popupEditMenu_menu_abd_choose_list"]')
+               .find(".fa-pencil-square-o")
+               .should("be.visible")
+               .click();
             cy.get('[view_id="abd_choose_form_appFormPermissionList"]')
                .should("be.visible")
                .click();
