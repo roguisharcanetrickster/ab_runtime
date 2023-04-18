@@ -4,6 +4,7 @@
 // Connect to the running containers and pipe their logs to the console or a file.
 // --toFile [filepath]
 //
+require("dotenv").config();
 const async = require("async");
 const os = require("os");
 const shell = require("shelljs");
@@ -40,13 +41,13 @@ if (os.platform() == "win32") {
    // windows method of gathering the service names:
    stdout = shell
       .exec(
-         `for /f "tokens=2" %a in ('docker service ls ^| findstr "ab_" ') do @echo %a`
+         `for /f "tokens=2" %a in ('docker service ls ^| findstr "${process.env.STACKNAME}_" ') do @echo %a`
       )
       .stdout.replace(/\r/g, "");
 } else {
    // common unix method of gathering the service names:
    stdout = shell.exec(
-      `docker service ls | grep "ab_" | awk '{ print $2 }'`
+      `docker service ls | grep "${process.env.STACKNAME}_" | awk '{ print $2 }'`
    ).stdout;
 }
 
