@@ -60,22 +60,51 @@ Cypress.Commands.add("RunSQL", (folder, files, fail = true) => {
       }
       const containerId = stdout.match(regEx)[0];
 
-      files.forEach((file) => {
-         const path = `./cypress/e2e/${folder}/test_setup/sql/${file}`;
+      const user = Cypress.env("DB_USER");
+      const password = Cypress.env("DB_PASSWORD");
 
-         cy.exec(`docker cp ${path} ${containerId}:/sql/${file}`, {
-            log: false,
-         });
-         const user = Cypress.env("DB_USER");
-         const password = Cypress.env("DB_PASSWORD");
-         cy.exec(
-            /* eslint-disable no-useless-escape*/
-            `docker exec ${containerId} bash -c "mysql -u ${user} -p${password} \"appbuilder-admin\" < ./sql/${file}"`,
-            { failOnNonZeroExit: fail }
-         );
-         cy.exec(`docker exec ${containerId} bash -c "rm ./sql/${file}"`, {
-            log: false,
-         });
+      let catCmd = "cat ";
+      files.forEach((file) => {
+         const path = `./cypress/e2e/${folder}/test_setup/sql/${file} `;
+         catCmd += path;
       });
+      catCmd += `> ./cypress/e2e/${folder}/test_setup/sql/combineSql.sql`;
+      cy.exec(catCmd);
+      cy.exec(
+         `docker cp ./cypress/e2e/${folder}/test_setup/sql/combineSql.sql ${containerId}:/sql/combineSql.sql`,
+         {
+            log: false,
+         }
+      );
+
+      cy.exec(
+         /* eslint-disable no-useless-escape*/
+         `docker exec ${containerId} bash -c "mysql -u ${user} -p${password} \"appbuilder-admin\" < ./sql/combineSql.sql"`,
+         { failOnNonZeroExit: fail }
+      );
+      cy.exec(`docker exec ${containerId} bash -c "rm ./sql/combineSql.sql"`, {
+         log: false,
+      });
+      cy.exec(`rm ./cypress/e2e/${folder}/test_setup/sql/combineSql.sql`, {
+         log: false,
+      });
+
+      // files.forEach((file) => {
+      //    const path = `./cypress/e2e/${folder}/test_setup/sql/${file}`;
+
+      //    cy.exec(`docker cp ${path} ${containerId}:/sql/${file}`, {
+      //       log: false,
+      //    });
+      //    const user = Cypress.env("DB_USER");
+      //    const password = Cypress.env("DB_PASSWORD");
+      //    cy.exec(
+      //       /* eslint-disable no-useless-escape*/
+      //       `docker exec ${containerId} bash -c "mysql -u ${user} -p${password} \"appbuilder-admin\" < ./sql/${file}"`,
+      //       { failOnNonZeroExit: fail }
+      //    );
+      //    cy.exec(`docker exec ${containerId} bash -c "rm ./sql/${file}"`, {
+      //       log: false,
+      //    });
+      // });
    });
 });
