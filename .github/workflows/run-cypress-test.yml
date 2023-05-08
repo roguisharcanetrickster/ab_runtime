@@ -29,7 +29,7 @@ jobs:
            uses: actions/checkout@v3
            with:
               repository: digi-serve/kitchensink_app
-              path: ab/test/e2e/cypress/integration/kitchensink_app
+              path: ab/test/e2e/cypress/e2e/kitchensink_app
 
          - name: Deploy Stack
            run: ./UP.sh -t -q
