@@ -43,7 +43,7 @@ const runCommand = (command) =>
 
 const dbMigrate = async (branch) => {
    const response = await runCommand(
-      `docker run -v ${__dirname}/config/local.js:/app/config/local.js --network=${stackNoSpace}_default digiserve/ab-migration-manager:${branch} node app.js`
+      `docker run --env-file .env --network=${stackNoSpace}_default digiserve/ab-migration-manager:${branch} node app.js`
    );
 
    return response;
@@ -208,19 +208,19 @@ const Do = async () => {
       const listServices = Object.keys(services);
 
       // our migration image also needs to be updated:
-      let branchMigrate = "master";
-      if (listServices.length) {
-         let ab = listServices.find((s) => s.indexOf("appbuilder") > -1);
-         if (ab) {
-            branchMigrate = ab.split(":")[1];
-            if (!branchMigrate) branchMigrate = "master";
-         }
-      }
+      let branchMigrate = process.env.AB_MIGRATION_MANAGER_VERSION || "master";
+      // if (listServices.length) {
+      //    let ab = listServices.find((s) => s.indexOf("appbuilder") > -1);
+      //    if (ab) {
+      //       branchMigrate = ab.split(":")[1];
+      //       if (!branchMigrate) branchMigrate = "master";
+      //    }
+      // }
       listServices.unshift(`digiserve/ab-migration-manager:${branchMigrate}`);
 
       await processHandler("Updating Images", updateImage, listServices);
 
-      await processHandler("Reseting config", updateConfig);
+      // await processHandler("Reseting config", updateConfig);
 
       await processHandler("DB Migrations", dbMigrate, branchMigrate);
 
