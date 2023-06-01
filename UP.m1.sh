@@ -25,10 +25,13 @@ then
 fi
 if [[ -n $Test ]]
 then
-    TestOveride="-c ./test/setup/ci-test.overide.yml"
+    # TestOveride="-c ./test/setup/ci-test.overide.yml"
+    TestOveride="-f ./test/setup/ci-test.overide.yml"
 fi
 nohup node ab_system_monitor.js &> /dev/null &
-docker stack deploy -c $File -c docker-compose.override.yml $TestOveride ${STACKNAME}
+# docker stack deploy -c $File -c docker-compose.override.yml $TestOveride ${STACKNAME}
+## Apple M1 fix: use docker-compose until we fix the docker stack issue
+docker-compose -f $File -f docker-compose.override.yml $TestOveride up -d
 if [[ -z $Quiet ]]
 then
 ./logs.js
