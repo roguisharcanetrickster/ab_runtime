@@ -45,10 +45,17 @@ if (os.platform() == "win32") {
       )
       .stdout.replace(/\r/g, "");
 } else {
-   // common unix method of gathering the service names:
-   stdout = shell.exec(
-      `docker service ls | grep "${process.env.STACKNAME}_" | awk '{ print $2 }'`
-   ).stdout;
+   if (process.arch == "arm64") {
+      // common unix method of gathering the service names:
+      stdout = shell.exec(
+         `docker container ls | grep "${process.env.STACKNAME}_" | awk '{ print $1 }'`
+      ).stdout;
+   } else {
+      // common unix method of gathering the service names:
+      stdout = shell.exec(
+         `docker service ls | grep "${process.env.STACKNAME}_" | awk '{ print $2 }'`
+      ).stdout;
+   }
 }
 
 var allServiceIDs = stdout.split("\n");
@@ -101,6 +108,10 @@ async.eachSeries(
 
       // create a new process for logging the given service id
       var options = ["service", "logs", "-f", "--tail", "50", id]; // `docker service logs -f ${id}`;
+      if (process.arch == "arm64") {
+         // for M1 chips, log the containers
+         options = ["container", "logs", "-f", id];
+      }
       var logger = spawn("docker", options, {
          // stdio: ["ignore", "ignore", "ignore"]
       });
