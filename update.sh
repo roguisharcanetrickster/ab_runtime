@@ -7,9 +7,8 @@ set -o allexport
 source .env
 set +o allexport
 
-podman image pull \
-    docker.io/digiserve/ab-config:${AB_CONFIG_VERSION} \
-    docker.io/library/mariadb:latest \
+${PLATFORM} image pull \
+    docker.io/digiserve/ab-db:${AB_DB_VERSION} \
     docker.io/library/redis:latest \
     docker.io/digiserve/ab-api-sails:${AB_API_SAILS_VERSION} \
     docker.io/digiserve/ab-appbuilder:${AB_APPBUILDER_VERSION} \

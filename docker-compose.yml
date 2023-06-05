@@ -1,40 +1,38 @@
-version: "3.2"
+version: "3.9"
 
 volumes:
-  config:
   files:
-  mysql_config:
   mysql_data:
-  mysql_key:
-  nginx_etc:
   redis_data:
-  clamav:
+  # clamav:
+
+networks:
+  default:
+    attachable: true
 
 services:
 
   #nginx setup
   web:
     image: docker.io/digiserve/ab-web:$AB_WEB_VERSION
+    hostname: web
     volumes:
-      - type: bind
-        source: ./nginx/html
-        target: /usr/share/nginx/html
-      - nginx_etc:/etc
       - files:/data
     depends_on:
       - api_sails
-     #/nginx
+  #/nginx
 
 
   #db: use Maria DB as our backend DB
   db:
-    image: docker.io/mariadb
+    image: docker.io/digiserve/ab-db:$AB_DB_VERSION
+    hostname: db
     environment:
-      MYSQL_ROOT_PASSWORD: $MYSQL_PASSWORD # from .env
+      MYSQL_ROOT_PASSWORD: $MYSQL_PASSWORD
     volumes:
-      - mysql_config:/etc/mysql/conf.d
+      # - mysql_config:/etc/mysql/conf.d
       - mysql_data:/var/lib/mysql
-      - mysql_key:/key
+      # - mysql_key:/key
     # on windows: use this command. (be sure to clear out mysql/data folder)
     # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
     ######
@@ -49,31 +47,47 @@ services:
     image: docker.io/redis
     ## NOTE: don't expose the service to the outside for security:
     ## if you do expose it, then set a password.
+    hostname: redis
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
   #/redis
 
 
-  #config: simply exists to pull in the config/local.js into our config volume
-  config:
-    image: docker.io/digiserve/ab-config:$AB_CONFIG_VERSION
-    volumes:
-      - type: bind
-        source: ./config/local.js
-        target: /config_safe/local.js
-      - config:/config
-    working_dir: /app
-    command: ["node", "app.js"]
-  #/config
+  # #config: simply exists to pull in the config/local.js into our config volume
+  # config:
+  #   image: docker.io/digiserve/ab-config:$AB_CONFIG_VERSION
+  #   # workaround for SELinux bind mount issue (for podman only)
+  #   # security_opt:
+  #   #   label: disable
+  #   hostname: config
+  #   volumes:
+  #     - type: bind
+  #       source: ./config/local.js
+  #       target: /config_safe/local.js
+  #     - config:/config
+  #   working_dir: /app
+  #   command: ["node", "app.js"]
+  # #/config
 
 
   #api_sails: our API end point
   api_sails:
     image: docker.io/digiserve/ab-api-sails:$AB_API_SAILS_VERSION
+    # workaround for SELinux bind mount issue (for podman only)
+    # security_opt:
+    #   label: disable
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
+      - NODE_ENV=development
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
       - CAS_ENABLED
       - CAS_BASE_URL
       - CAS_UUID_KEY
@@ -82,58 +96,82 @@ services:
       - OKTA_DOMAIN
       - OKTA_CLIENT_ID
       - OKTA_CLIENT_SECRET
+      # - FILE_PROCESSOR_PATH
+      # - FILE_PROCESSOR_UPLOAD_DIR
+      # - FILE_PROCESSOR_MAXBYTES
       - RELAY_ENABLED
       - RELAY_SERVER_TOKEN
+      - SAILS_SESSION_SECRET
+    hostname: api_sails
     volumes:
       - type: bind
         source: ./logs/appbuilder/
         target: /var/log/appbuilder/
-      - config:/app/config
       - files:/data
     depends_on:
       - redis
-      - config
+    # command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/api_sails
 
 
   #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
   appbuilder:
-    restart: always
-    deploy:
-      restart_policy:
-        delay: 3s
-        max_attempts: 5
-        window: 60s
     image: docker.io/digiserve/ab-appbuilder:$AB_APPBUILDER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-    volumes:
-      - config:/app/config
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+      - APPBUILDER_ENABLE
+      - CIRCUITBREAKER_TIMEOUT
+      - CIRCUITBREAKER_THRESHHOLD
+      - CIRCUITBREAKER_RESET
+    hostname: appbuilder
     depends_on:
       - redis
-      - config
+    # command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/appbuilder
 
 
-  #bot_manager: our #slack bot service
+  # #bot_manager: our #slack bot service
   # bot_manager:
-  #   image: digiserve/ab-bot-manager:develop
+  #   image: digiserve/ab-bot-manager:$AB_BOT_MANAGER_VERSION
   #   environment:
   #     - COTE_DISCOVERY_REDIS_HOST=redis
-  #   volumes:
-  #     - config:/app/config
-  #     # sharing .sock files currently don't work on docker-for-mac:
-  #     # https://github.com/docker/for-mac/issues/483
-  #     # For a Mac host, configure config/local.js to hostConnection.tcp
-  #     # but it doesn't hurt to include the /tmp dir for all platforms.
-  #     - type: bind
-  #       source: /tmp
-  #       target: /tmp
+  #     - BOT_DOCKERHUB_ENABLE
+  #     - BOT_DOCKERHUB_PORT
+  #     - BOT_SLACKBOT_ENABLE
+  #     - BOT_SLACKBOT_TOKEN
+  #     - BOT_SLACKBOT_NAME
+  #     - BOT_SLACKBOT_CHANNEL
+  #     - BOT_SLACKBOT_PORT
+  #     - BOT_SLACKBOT_SIGNINGSECRET
+  #     - BOT_SLACKBOT_SOCKETMODE
+  #     - BOT_SLACKBOT_APPTOKEN
+  #     - BOT_TRIGGERS
+  #     - BOT_COMMANDS
+  #     - BOT_HOST_SOCK_PATH
+  #     - BOT_HOST_TCP_PORT
+  #     - BOT_HOST_TCP_ACCESSTOKEN
+  #   hostname: bot_manager
+  #   # volumes:
+  #   #   # sharing .sock files currently don't work on docker-for-mac:
+  #   #   # https://github.com/docker/for-mac/issues/483
+  #   #   # For a Mac host, configure BOT_HOST_TCP_PORT & BOT_HOST_TCP_ACCESSTOKEN
+  #   #   #
+  #   #   # For other platforms, configure BOT_HOST_SOCK_PATH and share the path
+  #   #   # to your sock file:
+  #   #   - type: bind
+  #   #     source: /tmp
+  #   #     target: /tmp
   #   depends_on:
   #     - redis
-  #     - config
-  #/bot_manager
+  # #/bot_manager
 
 
   # custom_reports: A microservice for managing custom reports
@@ -141,13 +179,18 @@ services:
     image: docker.io/digiserve/ab-custom-reports:$AB_CUSTOM_REPORTS_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
       - CUSTOM_REPORTS_ENABLED
-    volumes:
-      - config:/app/config
+    hostname: custom_reports
     depends_on:
       - redis
-      - config
   #/custom_reports
 
 
@@ -156,12 +199,18 @@ services:
     image: docker.io/digiserve/ab-definition-manager:$AB_DEFINITION_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-    volumes:
-      - config:/app/config
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+      - DEFINITION_MANAGER_ENABLE
+    hostname: definition_manager
     depends_on:
       - redis
-      - config
   #/definition_manager
 
 
@@ -170,15 +219,25 @@ services:
     image: docker.io/digiserve/ab-file-processor:$AB_FILE_PROCESSOR_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-      - CLAMAV_ENABLED
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+      - FILE_PROCESSOR_ENABLE
+      # - FILE_PROCESSOR_PATH
+      # - FILE_PROCESSOR_UPLOAD_DIR
+      # - FILE_PROCESSOR_MAXBYTES
+      # - CLAMAV_ENABLED
+    hostname: file_processor
     volumes:
-      - config:/app/config
       - files:/data
-      - clamav:/var/lib/clamav
+      # - clamav:/var/lib/clamav
     depends_on:
       - redis
-      - config
   #/file_processor
 
 
@@ -187,16 +246,22 @@ services:
     image: docker.io/digiserve/ab-log-manager:$AB_LOG_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
       - SENTRY_ENABLED
       - SENTRY_DSN
       - SENTRY_SAMPLE_RATE
       - SENTRY_SERVER_NAME
-    volumes:
-      - config:/app/config
+      # - SENTRY_CONFIG
+    hostname: log_manager
     depends_on:
       - redis
-      - config
   #/log_manager
 
 
@@ -205,12 +270,28 @@ services:
     image: docker.io/digiserve/ab-notification-email:$AB_NOTIFICATION_EMAIL_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-    volumes:
-      - config:/app/config
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+      - NOTIFICATION_EMAIL_ENABLE
+      - NOTIFICATION_EMAIL_DEFAULT
+      - SMTP_HOST
+      - SMTP_PORT
+      - SMTP_SECURE
+      # Default Auth Method is "login"
+      # specify the user/password
+      - SMTP_USER
+      - SMTP_PASSWORD
+      # For more complicated methods:
+      # - SMTP_AUTH="{ login config }"
+    hostname: notification_email
     depends_on:
       - redis
-      - config
   #/notification_email
 
 
@@ -219,12 +300,17 @@ services:
     image: docker.io/digiserve/ab-process-manager:$AB_PROCESS_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-    volumes:
-      - config:/app/config
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+    hostname: process_manager
     depends_on:
       - redis
-      - config
   #/process_manager
 
 
@@ -233,19 +319,23 @@ services:
     image: docker.io/digiserve/ab-relay:$AB_RELAY_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-      - RELAY_ENABLED
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+      - RELAY_ENABLE
       - RELAY_SERVER_URL
       - RELAY_SERVER_TOKEN
       - RELAY_POLL_FREQUENCY
       - RELAY_MAX_PACKET_SIZE
       - PWA_URL
     hostname: relay
-    volumes:
-      - config:/app/config
     depends_on:
       - redis
-      - config
   #/relay
 
 
@@ -254,12 +344,19 @@ services:
     image: docker.io/digiserve/ab-tenant-manager:$AB_TENANT_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-    volumes:
-      - config:/app/config
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+      - TENANT_MANAGER_ENABLE
+      # - TENANT_MANAGER_TENANT_ID
+    hostname: tenant_manager
     depends_on:
       - redis
-      - config
   #/tenant_manager
 
 
@@ -268,22 +365,18 @@ services:
     image: docker.io/digiserve/ab-user-manager:$AB_USER_MANAGER_VERSION
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
-      - MYSQL_PASSWORD # from .env
-    volumes:
-      - config:/app/config
+      - MYSQL_PASSWORD
+      # - MYSQL_HOST
+      # - MYSQL_PORT
+      # - MYSQL_USER
+      # - MYSQL_DBPREFIX
+      # - MYSQL_DBADMIN
+      # - MYSQL_POOL_MAX
+      # - MYSQL_POOL_ACQUIRE_TIMEOUT
+      - USER_MANAGER_ENABLE
+      - USER_MANAGER_MAX_FAILED_LOGINS
+    hostname: user_manager
     depends_on:
       - redis
-      - config
+    # command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
   #/user_manager
-
-
-#  #watchtower: monitor and update our running containers
-#  watchtower:
-#    image: v2tec/watchtower
-#    volumes:
-#      # - /var/run/docker.sock:/var/run/docker.sock
-#      - type: bind
-#        source: /var/run/docker.sock
-#        target: /var/run/docker.sock
-#    command: --interval 10 --debug
-#  #/watchtower

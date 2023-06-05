@@ -5,7 +5,7 @@ set -o allexport
 source .env
 set +o allexport
 
-systemctl --user stop pod-${STACKNAME}.service
+./Down.sh
 
 echo -n "Waiting for containers to stop..."
 while [ "`podman ps --noheading | grep ${STACKNAME}`" != "" ]
@@ -16,5 +16,5 @@ done
 echo "OK"
 
 echo "Starting again"
-systemctl --user start pod-${STACKNAME}.service
+./UP.sh
 
