@@ -39,3 +39,5 @@ lib-cov
 *.log
 *.out
 *.pid
+
+node_modules

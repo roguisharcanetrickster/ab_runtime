@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Import ENV variables
 set -o allexport
@@ -8,34 +8,41 @@ set +o allexport
 if [ "$PLATFORM" = "podman" ]
 then
     CMD="podman logs"
+    SUFFIX="_1"
 else
     CMD="docker service logs"
+    SUFFIX=""
 fi
 
 case "$1" in
     "db")
-        $CMD --tail 100 -f ${STACKNAME}_db_1
+        $CMD --tail 100 -f ${STACKNAME}_db${SUFFIX}
         ;;
     "web")
-        $CMD --tail 100 -f ${STACKNAME}_web_1
+        $CMD --tail 100 -f ${STACKNAME}_web${SUFFIX}
         ;;
     "ab")
-        $CMD --tail 100 -f ${STACKNAME}_appbuilder_1
+        $CMD --tail 100 -f ${STACKNAME}_appbuilder${SUFFIX}
         ;;
     "sails")
-        $CMD --tail 500 -f ${STACKNAME}_api_sails_1
+        $CMD --tail 500 -f ${STACKNAME}_api_sails${SUFFIX}
         ;;
     "redis")
-        $CMD --tail 100 -f ${STACKNAME}_redis_1
+        $CMD --tail 100 -f ${STACKNAME}_redis${SUFFIX}
         ;;
     "pm")
-        $CMD --tail 100 -f ${STACKNAME}_process_manager_1
+        $CMD --tail 100 -f ${STACKNAME}_process_manager${SUFFIX}
         ;;
     "ne")
-        $CMD --tail 100 -f ${STACKNAME}_notification_email_1
+        $CMD --tail 100 -f ${STACKNAME}_notification_email${SUFFIX}
         ;;
     "system")
-        journalctl --user -u pod-${STACKNAME}.service -n 500 -f
+        if [ "$PLATFORM" = "podman" ]
+        then
+            journalctl --user -u pod-${STACKNAME}.service -n 500 -f
+        else
+            node logs.js
+        fi
         ;;
     *)
         echo "Usage:"
