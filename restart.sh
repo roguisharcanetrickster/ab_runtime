@@ -11,7 +11,7 @@ if [ "$PLATFORM" = "podman" ]
 then
    CMD="podman ps --noheading"
 else
-   CMD="docker ps"
+   CMD="docker ps -a"
 fi
 
 echo -n "Waiting for containers to stop..."
@@ -23,4 +23,5 @@ done
 echo "OK"
 
 echo "Starting again"
+sleep 1
 ./UP.sh
