@@ -74,9 +74,9 @@ BEGIN
 -- LPAD((SUBSTRING_INDEX(FP_Last, "M", 1)+1),2,0)
 
    -- SELECT CONCAT("FY20", LPAD((SUBSTRING_INDEX(FY_PERIOD, "Y", -1)+ 1), 2, 0) ) INTO NEW_FY_TWO_DIGITS;
-   SELECT CONCAT("FY", LPAD(RIGHT(NEW_FY, 2),2,0)) INTO NEW_FY_TWO_DIGITS;
+   -- SELECT CONCAT("FY", LPAD(RIGHT(NEW_FY, 2),2,0)) INTO NEW_FY_TWO_DIGITS;
    WHILE LOOP_Index <= 12 DO
-      SELECT CONCAT(NEW_FY_TWO_DIGITS, " M", LPAD(LOOP_Index, 2, 0) ) INTO NEW_FP;
+      SELECT CONCAT(NEW_FY, " M", LPAD(LOOP_Index, 2, 0) ) INTO NEW_FP;
       INSERT INTO `AB_AccountingApp_FiscalMonth` 
          (`FYear`, `FY Per`, `Start`, `End`, `Status`, `Current Process`, `Open`, `uuid`,`created_at`,`updated_at`) 
       SELECT *
@@ -105,7 +105,7 @@ BEGIN
    END WHILE;
    -- make ID for first fiscal period
 -- 2.1 Find first fiscal month in the next fiscal year (M1)
-   SELECT CONCAT(NEW_FY_TWO_DIGITS, " M01" ) INTO NEW_FP;
+   SELECT CONCAT(NEW_FY, " M01" ) INTO NEW_FP;
    -- update month to be open
    UPDATE `AB_AccountingApp_FiscalMonth`
    SET `Open` = 1, `Status` = "1592549785939"
