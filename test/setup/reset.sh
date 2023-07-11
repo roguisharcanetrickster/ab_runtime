@@ -23,5 +23,6 @@ DEALLOCATE PREPARE stmt; " \
 echo "SET FOREIGN_KEY_CHECKS = 1;" >> ./drop_all_tables.sql
 
 mysql -u $DB_USER -p$DB_PASSWORD "appbuilder-$TENANT" < ./drop_all_tables.sql
-mysql -u $DB_USER -p$DB_PASSWORD "appbuilder-$TENANT" < ./sql/reset.sql
-mysql -u $DB_USER -p$DB_PASSWORD "appbuilder-$TENANT" < ./sql/reset_tenant.sql
+mysql -u $DB_USER -p$DB_PASSWORD "appbuilder-$TENANT" < ./docker-entrypoint-initdb.d/03-site_tables.sql
+mysql -u $DB_USER -p$DB_PASSWORD "appbuilder-$TENANT" < ./docker-entrypoint-initdb.d/02-tenant_manager.sql
+mysql -u $DB_USER -p$DB_PASSWORD "appbuilder-$TENANT" < ./reset-user.sql
