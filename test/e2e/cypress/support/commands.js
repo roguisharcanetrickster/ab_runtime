@@ -70,7 +70,7 @@ Cypress.Commands.add("RunSQL", (folder, files, fail = true) => {
       });
       catCmd += `> ./cypress/e2e/${folder}/test_setup/sql/combineSql.sql`;
       cy.exec(catCmd);
-      cy.exec(`docker exec ${containerId} mkdir -p /sql`)
+      cy.exec(`docker exec ${containerId} mkdir -p /sql`);
       cy.exec(
          `docker cp ./cypress/e2e/${folder}/test_setup/sql/combineSql.sql ${containerId}:/sql/combineSql.sql`,
          {
