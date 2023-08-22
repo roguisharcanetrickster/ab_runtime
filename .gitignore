@@ -44,6 +44,7 @@ logs/*
 
 *~
 *#
+.env
 .DS_STORE
 .netbeans
 nbproject
