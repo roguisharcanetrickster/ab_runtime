@@ -6,16 +6,17 @@
 // Use when a new docker image is available for our services.
 //
 require("dotenv").config();
+const version = require("./version");
 const { exec } = require("child_process");
-// const path = require("path");
-// const fs = require("fs");
+const path = require("path");
+const fs = require("fs").promises;
 
 // const cwd = process.cwd();
 
 const stack = ` ${process.env.STACKNAME}`;
 const stackNoSpace = stack.replace(" ", "");
 
-const hashServices = {};
+// const hashServices = {};
 // {hash}  { imagetag : {serviceData} }
 // collect a list of all the running images and their respective containers
 // {serviceData} : { ID, NAME, MODE, REPLICAS, IMAGE, PORTS }
@@ -27,6 +28,34 @@ const wait = async (mS) => {
       }, mS);
    });
 };
+
+/**
+ * Reads the version from ./version.js and updates env variables.
+ * @returns {string[]} docker image names for ab-services with the new tag
+ */
+async function updateVersion() {
+   console.log(`Using meta version ${version.meta_version}`);
+   const envPath = path.join(__dirname, ".env");
+   let envContent = await fs.readFile(envPath, { encoding: "utf-8" });
+   const images = [];
+   Object.keys(version.services).forEach((service) => {
+      const tag = version.services[service];
+      // Image to pull
+      images.push(`digiserve/ab-${service.replace(/_/g, "-")}:${tag}`);
+      // Update the process env
+      const envVar = `AB_${service.toUpperCase()}_VERSION`;
+      process.env[envVar] = tag;
+      // Update the .env file content
+      const regex = new RegExp(`${envVar}=.+`);
+      if (regex.test(envContent)) {
+         envContent = envContent.replace(regex, `${envVar}=${tag}`);
+      } else {
+         console.log(`Could not match ${regex.toString()}`);
+      }
+   });
+   await fs.writeFile(envPath, envContent, { encoding: "utf-8" });
+   return images;
+}
 
 const runCommand = (command) =>
    new Promise((resolve, reject) => {
@@ -49,54 +78,54 @@ const dbMigrate = async (branch) => {
    return response;
 };
 
-const getServices = async () => {
-   const colCommand = "docker service ls";
-   const command = `docker service ls | grep ${stack}_`;
+// const getServices = async () => {
+//    const colCommand = "docker service ls";
+//    const command = `docker service ls | grep ${stack}_`;
 
-   const columns = [];
-   // {array} the headers of the columns from the docker service ls command
+//    const columns = [];
+//    // {array} the headers of the columns from the docker service ls command
 
-   try {
-      const run = await runCommand(colCommand);
-      const colLine = run.stdout.split("\n").shift();
+//    try {
+//       const run = await runCommand(colCommand);
+//       const colLine = run.stdout.split("\n").shift();
 
-      colLine.split(" ").map((part) => {
-         if (part.length > 0) {
-            columns.push(part);
-         }
-      });
-   } catch (err) {
-      console.error("Error getting service columns:", err);
-      throw err;
-   }
+//       colLine.split(" ").map((part) => {
+//          if (part.length > 0) {
+//             columns.push(part);
+//          }
+//       });
+//    } catch (err) {
+//       console.error("Error getting service columns:", err);
+//       throw err;
+//    }
 
-   try {
-      let output = await runCommand(command);
+//    try {
+//       let output = await runCommand(command);
 
-      const lines = output.stdout.split("\n");
-      lines.map((line) => {
-         let serviceHash = {};
-         let index = 0;
-         line.split(" ").map((part) => {
-            if (part.length > 0) {
-               serviceHash[columns[index]] = part;
-               index++;
-            }
-         });
-         if (serviceHash["IMAGE"]) {
-            hashServices[serviceHash["IMAGE"]] = serviceHash;
-         }
-      });
+//       const lines = output.stdout.split("\n");
+//       lines.map((line) => {
+//          let serviceHash = {};
+//          let index = 0;
+//          line.split(" ").map((part) => {
+//             if (part.length > 0) {
+//                serviceHash[columns[index]] = part;
+//                index++;
+//             }
+//          });
+//          if (serviceHash["IMAGE"]) {
+//             hashServices[serviceHash["IMAGE"]] = serviceHash;
+//          }
+//       });
 
-      console.log();
-      console.log("Found Service Data:");
-      console.log(hashServices);
-      console.log();
-      return hashServices;
-   } catch (err) {
-      console.error(err);
-   }
-};
+//       console.log();
+//       console.log("Found Service Data:");
+//       console.log(hashServices);
+//       console.log();
+//       return hashServices;
+//    } catch (err) {
+//       console.error(err);
+//    }
+// };
 
 const updateImage = async (services) => {
    if (!services.length) return;
@@ -127,24 +156,24 @@ const updateImage = async (services) => {
    return response;
 };
 
-const updateConfig = async () => {
-   const response = await runCommand(
-      `docker stack deploy -c config-compose.yml${stack}`
-   );
+// const updateConfig = async () => {
+//    const response = await runCommand(
+//       `docker stack deploy -c config-compose.yml${stack}`
+//    );
 
-   await wait(5000);
+//    await wait(5000);
 
-   while (
-      !(
-         await runCommand(
-            `docker service logs${stack}_config | tail -1 | grep "... config preparation complete" || true`
-         )
-      ).stdout
-   )
-      await wait(1000);
+//    while (
+//       !(
+//          await runCommand(
+//             `docker service logs${stack}_config | tail -1 | grep "... config preparation complete" || true`
+//          )
+//       ).stdout
+//    )
+//       await wait(1000);
 
-   return response;
-};
+//    return response;
+// };
 
 const updateDockerCompose = async (services) => {
    if (!services.length) throw new Error("There are no Docker services up.");
@@ -204,8 +233,8 @@ const processHandler = async (processName, callbackFunction, ...parameter) => {
 
 const Do = async () => {
    try {
-      const services = await getServices();
-      const listServices = Object.keys(services);
+      // const services = await getServices();
+      const listServices = await updateVersion();
 
       // our migration image also needs to be updated:
       let branchMigrate = process.env.AB_MIGRATION_MANAGER_VERSION || "master";
