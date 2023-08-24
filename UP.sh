@@ -17,6 +17,12 @@ do
     q)    Quiet="true"
     esac
 done
+
+if [ "$NODE_ENV" == "development" ];
+then
+    Dev="true"
+fi
+
 File="docker-compose.yml"
 TestOveride=""
 if [[ -n $Dev ]]
