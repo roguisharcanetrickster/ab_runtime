@@ -1,4 +1,5 @@
 name: E2E Tests
+# Installs AB with the given runtime and run our e2e test.
 on:
    workflow_call:
     inputs:
