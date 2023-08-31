@@ -5,9 +5,10 @@ on:
 env:
   SERVICE: ${{ github.event.client_payload.service }}
   VERSION: ${{ github.event.client_payload.version }}
+  TYPE: ${{ github.event.client_payload.type }}
 jobs:
   update:
-    name: Update
+    name: Update `version.json`
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.set_branch.outputs.branch }}
@@ -18,36 +19,34 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-        path: ab
       
       - name: Version Update
-        run: node versionUpdate $SERVICE $VERSION
-        working-directory: ./ab
+        run: node versionUpdate.mjs $SERVICE $VERSION
 
       - name: Commit Change to New Branch
         id: commit_version
         uses: EndBug/add-and-commit@v9
         with:
-          message: 'Update $SERVICE to $VERSION (from GitHub Actions Workflow)'
+          message: Update ${{ env.SERVICE }} to ${{ env.VERSION }} (from GitHub Actions Workflow)
           new_branch: ${{ steps.set_branch.outputs.branch }}
-          working-directory: ./ab
 
   call-run-cy-test:
+    name: Test
     needs: update
-    uses: ./.github/run-cy-test.yml
+    uses: ./.github/workflows/run-cy-test.yml
     with:
-      branch: ${{ jobs.update.outputs.branch }}
+      branch: ${{ needs.update.outputs.branch }}
 
   publish:
-    needs: call-run-cy-test
+    name: Publish Changes
+    needs: [ update, call-run-cy-test]
+    if: ${{ github.event.client_payload.type == 'minor' || github.event.client_payload.type == 'patch' }}
     runs-on: ubuntu-latest
     env:
-      BRANCH: ${{ jobs.update.outputs.branch }}
-      TYPE: ${{ github.event.client_payload.type }}
+      BRANCH: ${{ needs.update.outputs.branch }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        path: ab
         with:
           branch: $BRANCH
 
@@ -80,36 +79,33 @@ jobs:
         env:
           NEW_VERSION: ${{ steps.increment_version.outputs.new_version }}
         with:
-          message: 'Update version $NEW_VERSION (from GitHub Actions Workflow)'
-          tag: 'v$NEW_VERSION'
-          working-directory: ./ab
+          message: Update version $NEW_VERSION (from GitHub Actions Workflow)
+          tag: v$NEW_VERSION
 
       - name: Checkout Master
-        run: git checkout master
-        working-directory: ./ab
+        run: git checkout $MASTER
 
       - name: Merge to master
         env:
-          COMMIT_MSG: 'Update $SERVICE to $VERSION (from GitHub Actions Workflow)'
+          COMMIT_MSG: Update $SERVICE to $VERSION (from GitHub Actions Workflow)
         run: git merge --squash $BRANCH -m $COMMIT_MSG
-        working-directory: ./ab
 
       - name: Push
         run: git push
-        working-directory: ./ab
          
       - name: Create release on GitHub
         uses: ncipollo/release-action@v1
         with:
-          tag: 'v${{ steps.increment_version.outputs.new_version }}'
-          body: '$SERVICE updated to $VERSION'
+          tag: v${{ steps.increment_version.outputs.new_version }}
+          body: $SERVICE updated to $VERSION
           token: ${{ secrets.GITHUB_TOKEN }}
       
       # - Delete the branch
 
-    fail:
-    needs: publish
-    if: {{ failure() }}
+  fail:
+    name: Create a PR
+    needs: call-run-cy-test
+    if: ${{ failure() || github.event.client_payload.type == 'major' }} 
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/github-script@v6
@@ -121,7 +117,7 @@ jobs:
             github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `Update ${SERVICE} to ${VERSION} (from GitHub Actions Workflow)`
-              base: master
+              title: `Update ${SERVICE} to ${VERSION} (from GitHub Actions Workflow)`,
+              base: "master",
               head: BRANCH
             })
