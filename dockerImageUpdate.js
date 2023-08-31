@@ -30,7 +30,7 @@ const wait = async (mS) => {
 };
 
 /**
- * Reads the version from ./version.js and updates env variables.
+ * Reads the version from ./version.json and updates env variables.
  * @returns {string[]} docker image names for ab-services with the new tag
  */
 async function updateVersion() {
