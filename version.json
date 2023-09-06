@@ -1,5 +1,4 @@
 {
-   "meta_version": "1.0.0",
    "services": {
       "api_sails": "develop",
       "appbuilder": "develop",
