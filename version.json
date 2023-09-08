@@ -7,7 +7,7 @@
       "custom_reports": "develop",
       "definition_manager": "develop",
       "file_processor": "develop",
-      "log_manager": "develop",
+      "log_manager": "1.0.0",
       "notification_email": "1.0.0",
       "process_manager": "develop",
       "relay": "1.0.0",
