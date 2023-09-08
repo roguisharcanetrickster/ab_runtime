@@ -10,7 +10,7 @@
       "log_manager": "develop",
       "notification_email": "develop",
       "process_manager": "develop",
-      "relay": "develop",
+      "relay": "1.0.0",
       "tenant_manager": "1.0.1",
       "user_manager": "develop"
    },
