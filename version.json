@@ -1,6 +1,6 @@
 {
    "services": {
-      "api_sails": "develop",
+      "api_sails": "1.0.0",
       "appbuilder": "develop",
       "db": "master",
       "web": "master",
