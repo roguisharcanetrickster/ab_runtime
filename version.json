@@ -4,7 +4,7 @@
       "appbuilder": "develop",
       "db": "master",
       "web": "master",
-      "custom_reports": "develop",
+      "custom_reports": "1.0.0",
       "definition_manager": "develop",
       "file_processor": "develop",
       "log_manager": "1.0.0",
