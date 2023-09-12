@@ -2,7 +2,7 @@
    "services": {
       "api_sails": "1.0.0",
       "appbuilder": "develop",
-      "db": "master",
+      "db": "1.0.0",
       "web": "master",
       "custom_reports": "1.0.0",
       "definition_manager": "develop",
