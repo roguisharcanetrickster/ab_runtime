@@ -6,7 +6,7 @@
       "web": "master",
       "custom_reports": "1.0.0",
       "definition_manager": "develop",
-      "file_processor": "develop",
+      "file_processor": "1.0.0",
       "log_manager": "1.0.0",
       "notification_email": "1.0.0",
       "process_manager": "develop",
