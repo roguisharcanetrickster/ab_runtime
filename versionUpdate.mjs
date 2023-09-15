@@ -43,7 +43,8 @@ async function updateServiceVersion(service, newVersion) {
       );
       process.exit(1);
    }
-   versions.services[service] = newVersion;
+  // Docker tags cannot contain `+`
+   versions.services[service] = newVersion.replaceAll("+", "_");
    writeVersionFile(versions);
    console.log("Updated %s from %s to %s", service, old, newVersion);
 }
