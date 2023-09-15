@@ -9,7 +9,7 @@
       "file_processor": "1.0.0",
       "log_manager": "1.0.0",
       "notification_email": "1.0.0",
-      "process_manager": "develop",
+      "process_manager": "1.0.0",
       "relay": "1.0.0",
       "tenant_manager": "1.0.1",
       "user_manager": "develop"
