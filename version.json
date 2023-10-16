@@ -9,7 +9,7 @@
       "file_processor": "1.0.0",
       "log_manager": "1.0.0",
       "notification_email": "1.0.0",
-      "process_manager": "1.0.0",
+      "process_manager": "1.0.2_p10002.c20001",
       "relay": "1.0.0",
       "tenant_manager": "1.0.1",
       "user_manager": "1.0.0"
