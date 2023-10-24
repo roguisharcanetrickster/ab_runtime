@@ -4,7 +4,7 @@
       "appbuilder": "1.0.0",
       "db": "1.0.0",
       "web": "1.0.10_d10100.p10106.c20001",
-      "custom_reports": "1.0.0",
+      "custom_reports": "1.0.5_p10003",
       "definition_manager": "1.0.1_p10001",
       "file_processor": "1.0.0",
       "log_manager": "1.0.0",
