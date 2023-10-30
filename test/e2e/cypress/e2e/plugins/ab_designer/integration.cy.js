@@ -241,7 +241,7 @@ describe("AB Designer:", () => {
          navigateABDesignerApplication(cy, appclicationDefault.name);
       });
 
-      describe.only("Objects", () => {
+      describe("Objects", () => {
          it("Add new Objects", () => {
             cy.get('[webix_tm_id="abd_work_tab_object"]')
                .should("exist")
@@ -519,7 +519,7 @@ describe("AB Designer:", () => {
             });
          });
 
-         it.skip("Delete", () => {
+         it("Delete", () => {
             cy.get('[view_id="ui_work_object_list_list"]')
                .contains("test_object_rename")
                .as("testObjectRename")
