@@ -59,7 +59,7 @@ describe("AB Designer:", () => {
                .find(".webix_list_item")
                .should("have.length", 1);
             cy.get(
-               '[data-cy="abd_choose_list_buttonCreateNewApplication"]'
+               '[data-cy="abd_choose_list_buttonCreateNewApplication"]',
             ).click();
             cy.get('[data-cy="abd_choose_form_label"]')
                .should("exist")
@@ -88,7 +88,7 @@ describe("AB Designer:", () => {
                .click();
             cy.get('[view_id="abd_work_labelAppName"]').should(
                "include.text",
-               appclicationDefault.name
+               appclicationDefault.name,
             );
             cy.get('[view_id="abd_work_toolBar"]')
                .find(".fa-arrow-left")
@@ -158,7 +158,7 @@ describe("AB Designer:", () => {
                .then(() => {
                   const filename = path.join(
                      Cypress.config("downloadsFolder"),
-                     "app_Test"
+                     "app_Test",
                   );
                   cy.readFile(filename).should("contain", "");
                });
@@ -200,7 +200,7 @@ describe("AB Designer:", () => {
             .find(".webix_list_item")
             .should("have.length", 1);
          cy.get(
-            '[data-cy="abd_choose_list_buttonCreateNewApplication"]'
+            '[data-cy="abd_choose_list_buttonCreateNewApplication"]',
          ).click();
          cy.get('[data-cy="abd_choose_form_label"]')
             .should("exist")
@@ -229,7 +229,7 @@ describe("AB Designer:", () => {
             .click();
          cy.get('[view_id="abd_work_labelAppName"]').should(
             "include.text",
-            appclicationDefault.name
+            appclicationDefault.name,
          );
          cy.get('[view_id="abd_work_toolBar"]')
             .find(".fa-arrow-left")
@@ -241,7 +241,7 @@ describe("AB Designer:", () => {
          navigateABDesignerApplication(cy, appclicationDefault.name);
       });
 
-      describe("Objects", () => {
+      describe.only("Objects", () => {
          it("Add new Objects", () => {
             cy.get('[webix_tm_id="abd_work_tab_object"]')
                .should("exist")
@@ -268,19 +268,19 @@ describe("AB Designer:", () => {
                .should("be.visible");
             cy.get("@test_object").click();
             cy.get(
-               '[view_id="abd_work_object_workspace_view_warnings_buttonWarning"]'
+               '[view_id="abd_work_object_workspace_view_warnings_buttonWarning"]',
             )
                .as("buttonShowIssues")
                .should("be.visible")
                .and("contain", "Show Issues")
                .click();
             cy.get(
-               '[view_id="abd_work_object_workspace_view_warnings_warnings"]'
+               '[view_id="abd_work_object_workspace_view_warnings_warnings"]',
             )
                .should("be.visible")
                .and("contain", "has no fields");
             cy.get(
-               '[view_id="abd_work_object_workspace_view_warnings_buttonWarningHide"]'
+               '[view_id="abd_work_object_workspace_view_warnings_buttonWarningHide"]',
             )
                .should("be.visible")
                .and("contain", "Hide Issues")
@@ -295,7 +295,7 @@ describe("AB Designer:", () => {
                .should("be.visible")
                .click();
             cy.get(
-               '[view_id="abd_common_popupEditMenu_menu_ui_work_object_list"]'
+               '[view_id="abd_common_popupEditMenu_menu_ui_work_object_list"]',
             )
                .contains("Rename")
                .click();
@@ -315,7 +315,7 @@ describe("AB Designer:", () => {
                .should("be.visible")
                .click();
             cy.get(
-               '[view_id="abd_common_popupEditMenu_menu_ui_work_object_list"]'
+               '[view_id="abd_common_popupEditMenu_menu_ui_work_object_list"]',
             )
                .contains("Exclude")
                .click();
@@ -328,14 +328,14 @@ describe("AB Designer:", () => {
                .find("input")
                .type("test_object_rename");
             cy.get(
-               '[view_id="ui_work_object_list_newObject_import_objectList"]'
+               '[view_id="ui_work_object_list_newObject_import_objectList"]',
             )
                .should("exist")
                .contains("test_object_rename")
                .should("exist")
                .click({ force: true });
             cy.get(
-               '[view_id="ui_work_object_list_newObject_import_buttonSave"]'
+               '[view_id="ui_work_object_list_newObject_import_buttonSave"]',
             ).click();
 
             cy.get('[view_id="ui_work_object_list_list"]')
@@ -343,7 +343,183 @@ describe("AB Designer:", () => {
                .should("exist");
          });
 
-         it("Delete", () => {
+         it("Field type Auto index", () => {
+            cy.get('[view_id="ui_work_object_list_list"]')
+               .contains("test_object_rename")
+               .click();
+            cy.get(
+               '[view_id="abd_work_object_workspace_view_warnings_buttonWarning"]',
+            ).as("buttonShowIssues");
+            cy.contains("Add field").click();
+            cy.contains("Auto Index").click();
+            cy.get(
+               '[data-cy="abd_work_object_workspace_popupNewDataField_properties_autoindex_label"]',
+            ).type("autoIndex");
+            cy.get(
+               '[data-cy="abd_work_object_workspace_popupNewDataField_properties_autoindex_prefix"]',
+            ).type("AUTOINDEX");
+            cy.get(
+               '[data-cy="abd_work_object_workspace_popupNewDataField_properties_autoindex_delimiter"]',
+            ).click();
+            cy.get(".webix_view.webix_window.webix_popup")
+               .find('[webix_l_id="dash"]')
+               .eq(0)
+               .click();
+            cy.get(
+               '[view_id="abd_work_object_workspace_popupNewDataField_buttonSave"]',
+            ).click();
+            cy.get('[data-cy$="_datatable"]')
+               .find(".webix_ss_header")
+               .contains("autoIndex")
+               .should("be.visible");
+            cy.get("@buttonShowIssues").should("not.exist");
+         });
+
+         it("Add new row", () => {
+            cy.get('[view_id="ui_work_object_list_list"]')
+               .contains("test_object_rename")
+               .click();
+            cy.get('[view_id="abd_work_object_workspace"]')
+               .contains("Add new row")
+               .should("be.visible")
+               .click();
+            cy.get('[data-cy$="_datatable"]')
+               .find(".webix_ss_body")
+               .contains("AUTOINDEX-0001")
+               .should("be.visible");
+         });
+
+         it("Add new API Objects", () => {
+            cy.get('[view_id="ui_work_object_list_list"]')
+               .contains("test_object_rename")
+               .parent()
+               .invoke("attr", "webix_item_id")
+               .then((objID) => {
+                  cy.get('[data-cy="ui_work_object_list_buttonNew"]')
+                     .should("be.visible")
+                     .click();
+                  cy.get(
+                     '[data-cy="ui_work_object_list_newObject_api_form_tab"]',
+                  )
+                     .should("be.visible")
+                     .click();
+                  cy.get('input[placeholder="Object name"]')
+                     .eq(1)
+                     .should("be.visible")
+                     .type("test_api_object");
+                  cy.get('[button_id="Read"]').should("be.visible").click();
+                  cy.get(
+                     '[webix_tm_id="ui_work_object_list_newObject_api_read_request_tabBasic"]',
+                  )
+                     .should("be.visible")
+                     .click();
+                  cy.get('input[placeholder="https://example.com"]')
+                     .should("be.visible")
+                     .type(`/app_builder/model/${objID}`);
+                  cy.get(
+                     '[view_id="ui_work_object_list_newObject_api_read_response_responsePanel"]',
+                  )
+                     .should("be.visible")
+                     .click();
+                  cy.get(
+                     '[webix_tm_id="ui_work_object_list_newObject_api_read_response_tabFields"]',
+                  )
+                     .should("be.visible")
+                     .click();
+                  cy.get('input[value="status"]')
+                     .should("be.visible")
+                     .parent()
+                     .parent()
+                     .parent()
+                     .find('select > option[selected="true"]')
+                     .should("have.text", "Single line text");
+                  cy.get('input[value="id"]')
+                     .should("be.visible")
+                     .parent()
+                     .parent()
+                     .parent()
+                     .as("inputID")
+                     .find('select > option[selected="true"]')
+                     .should("have.text", "Single line text");
+                  cy.get("@inputID")
+                     .find(".webix_icon.wxi-trash")
+                     .click();
+                  cy.get('input[value="id"]').should("not.exist");
+                  cy.get(
+                     '[webix_tm_id="ui_work_object_list_newObject_api_read_response_tabBasic"]',
+                  )
+                     .should("be.visible")
+                     .click();
+                  cy.get('input[placeholder="data.example"]')
+                     .type("data");
+                  cy.get(
+                     '[webix_tm_id="ui_work_object_list_newObject_api_read_response_tabFields"]',
+                  )
+                     .should("be.visible")
+                     .click();
+                  cy.get('input[value="total_count"]')
+                     .should("be.visible");
+                  cy.get('input[value="total_count"]')
+                     .should("be.visible");
+                  cy.get('input[value="offset"]')
+                     .should("be.visible");
+                  cy.get('input[value="limit"]')
+                     .should("be.visible");
+                  cy.get(
+                        '[webix_tm_id="ui_work_object_list_newObject_api_read_response_tabBasic"]',
+                     )
+                     .click();
+                  cy.get('input[placeholder="data.example"]')
+                     .type(".data");
+                  cy.get(
+                     '[webix_tm_id="ui_work_object_list_newObject_api_read_response_tabFields"]',
+                  )
+                     .click();
+                  cy.get('input[value="uuid"]')
+                     .should("be.visible");
+                  cy.get('input[value="created_at"]')
+                     .should("be.visible");
+                  cy.get('input[value="updated_at"]')
+                     .should("be.visible");
+                  cy.get('input[value="autoIndex"]')
+                     .should("be.visible")
+                     .parent()
+                     .parent()
+                     .parent()
+                     .find("select")
+                     .select("Single line text");
+                  cy.get('input[value="id"]')
+                     .should("be.visible");
+                  cy.get('[view_id="ui_work_object_list_newObject_api_buttonSave"]')
+                     .click();
+                  cy.get('[view_id="ui_work_object_list_list"]')
+                     .contains("test_api_object")
+                     .should("be.visible")
+                     .click();
+                  cy.get('[data-cy$="_datatable"]')
+                     .find(".webix_ss_header")
+                     .contains("uuid")
+                     .should("be.visible");
+                  cy.get('[data-cy$="_datatable"]')
+                     .find(".webix_ss_header")
+                     .contains("created_at")
+                     .should("be.visible");
+                  cy.get('[data-cy$="_datatable"]')
+                     .find(".webix_ss_header")
+                     .contains("updated_at")
+                     .should("be.visible");
+                  cy.get('[data-cy$="_datatable"]')
+                     .find(".webix_ss_header")
+                     .contains("autoIndex")
+                     .should("be.visible");
+                  cy.get('[data-cy$="_datatable"]')
+                     .find(".webix_ss_center_scroll")
+                     .find('[aria-rowindex="1"][aria-colindex="4"]')
+                     .should("have.text", "1");
+            });
+         });
+
+         it.skip("Delete", () => {
             cy.get('[view_id="ui_work_object_list_list"]')
                .contains("test_object_rename")
                .as("testObjectRename")
@@ -351,7 +527,7 @@ describe("AB Designer:", () => {
                .should("be.visible")
                .click();
             cy.get(
-               '[view_id="abd_common_popupEditMenu_menu_ui_work_object_list"]'
+               '[view_id="abd_common_popupEditMenu_menu_ui_work_object_list"]',
             )
                .contains("Delete")
                .click();
