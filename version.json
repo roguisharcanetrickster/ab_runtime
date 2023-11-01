@@ -1,7 +1,8 @@
 {
    "services": {
+
       "api_sails": "1.0.3",
-      "appbuilder": "1.0.11_p10008.c20103",
+      "appbuilder": "1.0.12_p10009",
       "db": "1.0.0",
       "web": "1.0.19_d10202.p10206.c20103",
       "custom_reports": "1.0.12_p10008.c20103",
@@ -14,5 +15,5 @@
       "tenant_manager": "1.0.5",
       "user_manager": "1.0.10_p10008.c20103"
    },
-   "version": "2.0.18"
+   "version": "2.0.19"
 }
