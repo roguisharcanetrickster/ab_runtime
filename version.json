@@ -1,18 +1,18 @@
- {
-   "meta_version": "1.0.0",
+{
    "services": {
-      "api_sails": "develop",
-      "appbuilder": "develop",
-      "db": "master",
-      "web": "master",
-      "custom_reports": "develop",
-      "definition_manager": "develop",
-      "file_processor": "develop",
-      "log_manager": "develop",
-      "notification_email": "develop",
-      "process_manager": "develop",
-      "relay": "develop",
-      "tenant_manager": "develop",
-      "user_manager": "develop"
-   }
+      "api_sails": "1.0.4",
+      "appbuilder": "1.0.12_p10009",
+      "db": "1.0.0",
+      "web": "1.0.21_d10202.p10208.c20103",
+      "custom_reports": "1.0.12_p10008.c20103",
+      "definition_manager": "1.0.12_p10008.c20103",
+      "file_processor": "1.0.10_p10008.c20103",
+      "log_manager": "1.1.0",
+      "notification_email": "1.0.4",
+      "process_manager": "1.0.12_p10008.c20103",
+      "relay": "1.0.4",
+      "tenant_manager": "1.0.5",
+      "user_manager": "1.0.10_p10008.c20103"
+   },
+   "version": "2.0.21"
 }

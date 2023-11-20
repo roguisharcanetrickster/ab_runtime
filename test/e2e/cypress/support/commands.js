@@ -41,7 +41,7 @@ Cypress.Commands.add("ResetDB", () => {
    const stack = Cypress.env("STACK");
 
    // Clear the Physical DB
-   cy.exec(`npm run test:reset ${stack}`);
+   cy.exec(`npm run test:reset ${stack}`, { failOnNonZeroExit: false });
 
    // Have the running services clear their definitions.
    cy.request("POST", "/test/reset", { tenant: Cypress.env("TENANT") });

@@ -8,22 +8,24 @@
     "eslint-plugin-prettier": "^4.2.1"
   },
   "dependencies": {
+    "@digiserve/ab-utils": "^1.6.0",
     "@slack/bolt": "^3.5.0",
-    "ab-utils": "github:digi-serve/ab-utils#master",
     "async": "^3.2.4",
     "dotenv": "^16.0.3",
     "nodemon": "^2.0.20",
+    "semver": "^7.5.4",
     "shelljs": "^0.8.4"
   },
   "scripts": {
+    "update": "./Update.sh",
     "cypress:open": "env-cmd cypress open --project ./test/e2e",
-    "test:boot": "env-cmd docker stack deploy -c docker-compose.dev.yml -c ./test/setup/test-compose.yml test_ab",
-    "test:down": "docker stack rm test_ab",
+    "test:boot": "./testUP.sh",
+    "test:down": "./testDown.sh",
     "test:e2e": "env-cmd cypress run --reporter dot --project ./test/e2e",
     "test:e2e:ab-runtime": "env-cmd cypress run --config-file cypress.ab_runtime.mjs --reporter dot --project ./test/e2e",
     "test:e2e:app": "env-cmd cypress run --config-file cypress.app.mjs --reporter dot --project ./test/e2e",
     "test:e2e:ab-designer": "env-cmd cypress run --config-file cypress.plugin.ab_designer.mjs --reporter dot --project ./test/e2e",
     "test:reset": "bash testReset.sh"
   },
-  "version": "1.0.0"
+  "version": "2.0.21"
 }
