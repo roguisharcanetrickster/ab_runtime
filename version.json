@@ -9,7 +9,7 @@
       "file_processor": "1.0.16_p10015.c20108",
       "log_manager": "1.1.0",
       "notification_email": "1.0.4",
-      "process_manager": "1.0.12_p10008.c20103",
+      "process_manager": "1.0.21_p10015.c20108",
       "relay": "1.0.4",
       "tenant_manager": "1.0.5",
       "user_manager": "1.0.17_p10015.c20108"
