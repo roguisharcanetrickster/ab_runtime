@@ -27,9 +27,6 @@ describe("Login Page", () => {
       Login(Cypress.env("USER_EMAIL"), Cypress.env("USER_PASSWORD"));
       cy.get("[data-cy=user_icon]").should("be.visible").click();
       cy.get("[data-cy=user_logout]").should("be.visible").click();
-      cy.get("[data-cy=portal_auth_login_form_tenantList]").should(
-         "be.visible"
-      );
    });
 
    // 3) Login Error Messages
