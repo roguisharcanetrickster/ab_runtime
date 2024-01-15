@@ -28,8 +28,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: ${{ steps.set_branch.outputs.branch }}'
-          sha: '${{ github.event.pull_request.head.sha }}'
+          branch: ${{ steps.set_branch.outputs.branch }}
+          sha: ${{ github.event.pull_request.head.sha }}
   update:
     name: Update `version.json`
     needs: get-branch
