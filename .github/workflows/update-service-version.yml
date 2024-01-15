@@ -22,13 +22,13 @@ jobs:
       - run: npm i semver
 
       - id: set_branch
-        run: echo "version=CI/staging/$(npx semver -i patch $(npm pkg get version | awk -F \" '{ print $2 }'))" >> "$GITHUB_OUTPUT"
+        run: echo "branch=CI/staging/$(npx semver -i patch $(npm pkg get version | awk -F \" '{ print $2 }'))" >> "$GITHUB_OUTPUT"
 
       - uses: peterjgrainger/action-create-branch@v2.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: 'CI/staging/${{ steps.next_version.outputs.version }}'
+          branch: ${{ steps.next_version.outputs.branch }}'
           sha: '${{ github.event.pull_request.head.sha }}'
   update:
     name: Update `version.json`
