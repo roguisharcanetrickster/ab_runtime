@@ -9,7 +9,7 @@ env:
   TYPE: ${{ github.event.client_payload.type }}
 jobs:
   get-branch:
-    name: Create a staginging branch
+    name: Create a staging branch
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.set_branch.outputs.branch }}
@@ -28,7 +28,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: ${{ steps.next_version.outputs.branch }}'
+          branch: ${{ steps.set_branch.outputs.branch }}'
           sha: '${{ github.event.pull_request.head.sha }}'
   update:
     name: Update `version.json`
