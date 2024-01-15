@@ -18,6 +18,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: master
+          
+      - run: npm i semver
 
       - id: set_branch
         run: echo "version=CI/staging/$(npx semver -i patch $(npm pkg get version | awk -F \" '{ print $2 }'))" >> "$GITHUB_OUTPUT"
