@@ -12,7 +12,7 @@
       "process_manager": "1.0.21_p10015.c20108",
       "relay": "1.0.6",
       "tenant_manager": "1.0.8",
-      "user_manager": "1.0.17_p10015.c20108"
+      "user_manager": "1.0.27_p10100"
    },
    "version": "2.0.21"
 }
