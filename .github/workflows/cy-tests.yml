@@ -33,17 +33,12 @@ jobs:
            run: ./UP.sh -t -q
            working-directory: ./ab
 
+         - run: docker service ls
+
          # These next steps are to save our ablogs to file
          - run: npm install pm2@latest -g
          - name: Save Logs
            run: pm2 start ./logs.js -- --toFile logs/ABServices.log
-           working-directory: ./ab
-
-         # Temp get the docker tags form the version file -> we should do this in the installer
-         - run: node dockerImageUpdate.js
-           working-directory: ./ab
-         # Hack > re-run UP to get our test override config applied again
-         - run: sleep 10 && ./UP.sh -t -q
            working-directory: ./ab
 
         #Run test
