@@ -34,7 +34,13 @@ then
     TestOveride="-c ./test/setup/ci-test.overide.yml"
 fi
 nohup node ab_system_monitor.js &> /dev/null &
-docker stack deploy -c $File -c docker-compose.override.yml $TestOveride ${STACKNAME}
+if [ "$PLATFORM" = "podman" ]
+then
+	systemctl --user start pod-${STACKNAME}.service
+   Quiet="true"
+else
+   docker stack deploy -c $File -c docker-compose.override.yml $TestOveride ${STACKNAME}
+fi
 if [[ -z $Quiet ]]
 then
 ./logs.js
