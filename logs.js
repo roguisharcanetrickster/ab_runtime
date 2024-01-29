@@ -37,7 +37,11 @@ if (process.argv[2] == "--toFile") {
 }
 
 var stdout = null;
-if (os.platform() == "win32") {
+if (process.env.PLATFORM === "podman") {
+   stdout = shell.exec(
+      `podman ps | awk '/${process.env.STACKNAME}_/ {print $1}'`
+   );
+} else if (os.platform() == "win32") {
    // windows method of gathering the service names:
    stdout = shell
       .exec(
@@ -75,6 +79,10 @@ function pad(text, length) {
    }
    return text;
 }
+/**
+ * @param {string} id
+ * @param {string} text
+ */
 function cleanText(id, text) {
    var lines = text.split("\n");
    var output = [];
@@ -100,8 +108,10 @@ async.eachSeries(
       }
 
       // create a new process for logging the given service id
-      var options = ["service", "logs", "-f", "--tail", "50", id]; // `docker service logs -f ${id}`;
-      var logger = spawn("docker", options, {
+      const command = process.env.PLATFORM === "podman" ? "podman" : "docker";
+      const options = ["service", "logs", "-f", "--tail", "50", id]; // `docker service logs -f ${id}`;
+      if (command === "podman") options.shift(); // `podman logs -f ${id}`
+      var logger = spawn(command, options, {
          // stdio: ["ignore", "ignore", "ignore"]
       });
       logger.stdout.on("data", (data) => {

@@ -18,7 +18,7 @@ if [ "$ID" == "" ]
 then
     echo "${STACKNAME} is not running"
 else
-    podman run \
+    ${PLATFORM} run \
         --network=${STACKNAME}_default \
         -e MYSQL_PASSWORD \
         digiserve/ab-migration-manager:master node app.js

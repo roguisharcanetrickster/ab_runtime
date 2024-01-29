@@ -16,6 +16,20 @@ The default account credentials are:
 - email: `admin@example.com`
 - password: `admin`
 
+## Stop AppBuilder
+
+```sh
+$ ./Down.sh
+```
+
+## View console
+
+```sh
+$ node logs
+// or
+$ ./logs.sh [option]
+```
+
 ## Updating
 Run`git pull` to update the version file (`version.json`).\
 Then run `node dockerImageUpdate` to update the running services.
@@ -90,18 +104,7 @@ run AppBuilder with (referred to here as `mystack`). This should match the
    $ ./migrate.sh
    ```
 
-## Stop AppBuilder
+## Podman
+The runtime can be alternatively used with podman. Most scripts of the scripts already support
+podman. Make sure the environment variable `PLATFORM` is set to `podman`.
 
-```sh
-$ ./Down.sh
-```
-
-## View console
-
-```sh
-$ node logs
-// or
-$ ./logs.sh [option]
-```
-
-Note you can use the same command to view logs from each service.
