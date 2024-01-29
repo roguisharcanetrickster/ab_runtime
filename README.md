@@ -7,30 +7,38 @@ The server side runtime for our AppBuilder project.
 Use [ab-cli](https://github.com/digi-serve/ab-cli) tool.
 
 ## Starting
-Run `./UP.sh` to bring up the Docker Stack.
+Run `./UP.sh` to bring up the Docker Stack. Options:
+- `-d` : **dev** run develop mode (uses docker-compose.dev.yml)
+- `-t` : **test** run in test mode (allows test reset route)
+- `-q` : **quiet** run without starting logs 
+
+The default account credentials are:
+- email: `admin@example.com`
+- password: `admin`
 
 ## Updating
 Run`git pull` to update the version file (`version.json`).\
 Then run `node dockerImageUpdate` to update the running services.
 
-# AppBuilder (v2) Production Runtime
+## Data
 
-The server side runtime for our AppBuilder project. This is meant for productions servers without root access, or for servers using container systems other than Docker. Recommend using [ab-cli](https://github.com/digi-serve/ab-cli) to install if possible.
+### Directories used for persistent storage
 
-This is for setting up an instance of the AppBuilder docker production stack on a server.
+- **./mysql/init**
 
-## Installation
+  The SQL files contained here will be used to populate the database for the
+  first time.
+  
+Much of the config and data are actually saved onto Docker volumes, and are not directly binded to directories anymore. The data backup procedure is left as an exercise for the reader.
 
-You need git and Docker. Then clone this repo.
 
-## Instructions
+## Manual Installation
 
-There is a somewhat complicated system for storing config settings in V2. For 
-the production runtime, we try to consolidate all of this into a single `.env`
-file. A sample is provided as `example.env`. Modify that to fit your own server
-setup, and save it as `.env`.
+The ab-cli will help set the config and write `.env`, `docker-compose.yml`, and
+`docker-compose.override.yml`. Examples can be found in `/examples/`, for a
+manual install copy these files to the root directory and adjust them as needed.
 
-## Config
+### Config
 
 The most important setting to change is `MYSQL_PASSWORD`. This will be your
 DB root password. Choose something secure.
@@ -42,59 +50,23 @@ already established password.
 
 Make sure to add your own settings _before_ running the setup steps below.
 
+### Preparation
 
-## Data
-
-### Directories used for persistent storage
-
-- **./mysql/init**
-
-  The SQL files contained here will be used to populate the database for the
-  first time.
-  
-With V2, much of the config and data are actually saved onto Docker volumes, and are not directly binded to directories anymore. The data backup procedure is left as an exercise for the reader.
-
-# Usage
-
-## Preparation
-
-Follow the **Instructions** section on configuring your DB credentials
+Follow the **Config** section on configuring your DB credentials
 and other settings.
-
-In order to issue Docker commands, your user account must either have root
-access, or be part of the _docker_ group.
 
 The following steps need to be done with the same docker stack name you plan to
 run AppBuilder with (referred to here as `mystack`). This should match the 
 `STACKNAME` setting in your `.env` file.
 
-1. Turn on Docker Swarm if needed:
-
+1. Turn on Docker Swarm if needed
    ```bash
    $ docker swarm init
    ```
-
-1. Create the nginx_etc volume
-
+1. Copy dbinit-compose.yml from /examples to the project root.
    ```bash
-   $ docker run -v mystack_nginx_etc:/etc nginx ls
+   $ cp ./examples/dbinit-compose.yml ./dbinit-compose.yml
    ```
-
-1. Run config-compose.yml
-
-   ```bash
-   $ docker stack deploy -c config-compose.yml mystack
-   ```
-
-   - Open the logs for `mystack_config`
-     ```bash
-     $ docker service logs -f mystack_config
-     ```
-   - Bring down the stack when you see `... init complete (config)`
-     ```bash
-     $ docker stack rm mystack
-     ```
-
 1. Run dbinit-compose.yml
 
    ```bash
@@ -109,27 +81,27 @@ run AppBuilder with (referred to here as `mystack`). This should match the
      ```bash
      $ docker stack rm mystack
      ```
-
-## Start AppBuilder
-
-```sh
-$ docker stack deploy -c docker-compose.yml -c docker-compose.override.yml mystack
-```
-
-The default account credentials are:
-- email: `admin@example.com`
-- password: `admin`
+1. Remove dbinit-compose.yml
+   ```bash
+   $ rm ./dbinit-compose.yml
+   ```
+1. Run db migrations
+   ```bash
+   $ ./migrate.sh
+   ```
 
 ## Stop AppBuilder
 
 ```sh
-$ docker stack rm mystack
+$ ./Down.sh
 ```
 
 ## View console
 
 ```sh
-$ docker service logs -f mystack_api_sails
+$ node logs
+// or
+$ ./logs.sh [option]
 ```
 
 Note you can use the same command to view logs from each service.
