@@ -4,8 +4,10 @@
 // stack.
 //
 // Use when a new docker image is available for our services.
+// Works with docker swarm or podman compose
 //
 require("dotenv").config();
+/** @type {{ meta_version: string, services: Object.<string, string> }} */
 const version = require("./version");
 const { exec } = require("child_process");
 const path = require("path");
@@ -13,25 +15,29 @@ const fs = require("fs").promises;
 
 // const cwd = process.cwd();
 
-const stack = ` ${process.env.STACKNAME}`;
-const stackNoSpace = stack.replace(" ", "");
+const stack = process.env.STACKNAME;
+const platform = process.env.PLATFORM === "podman" ? "podman" : "docker";
 
 // const hashServices = {};
 // {hash}  { imagetag : {serviceData} }
 // collect a list of all the running images and their respective containers
 // {serviceData} : { ID, NAME, MODE, REPLICAS, IMAGE, PORTS }
 
-const wait = async (mS) => {
+/**
+ * Helper to wait a given number of milliseconds
+ * @param {number} mS milliseconds to wait
+ */
+async function wait(mS) {
    return new Promise((resolve) => {
       setTimeout(() => {
-         resolve();
+         resolve(null);
       }, mS);
    });
-};
+}
 
 /**
  * Reads the version from ./version.json and updates env variables.
- * @returns {string[]} docker image names for ab-services with the new tag
+ * @returns {Promise<string[]>} image names for ab-services with the new tag
  */
 async function updateVersion() {
    console.log(`Using meta version ${version.meta_version}`);
@@ -57,8 +63,15 @@ async function updateVersion() {
    return images;
 }
 
-const runCommand = (command) =>
-   new Promise((resolve, reject) => {
+/** @typedef {{stdout:string, stderr: string}} CommandResponse */
+
+/**
+ * run a command using child_process.exec
+ * @param {string} command
+ * @returns {Promise<CommandResponse>}
+ */
+function runCommand(command) {
+   return new Promise((resolve, reject) => {
       exec(command, (error, stdout, stderr) => {
          if (error) {
             reject(error);
@@ -69,71 +82,30 @@ const runCommand = (command) =>
          resolve({ /*error,*/ stdout, stderr });
       });
    });
+}
 
-const dbMigrate = async (branch) => {
+/**
+ * run database migrations (from ab-migration manager)
+ * @param {string} branch
+ */
+async function dbMigrate(branch) {
    const response = await runCommand(
-      `docker run --env-file .env --network=${stackNoSpace}_default digiserve/ab-migration-manager:${branch} node app.js`
+      `${platform} run --env-file .env --network=${stack}_default digiserve/ab-migration-manager:${branch} node app.js`
    );
 
    return response;
-};
+}
 
-// const getServices = async () => {
-//    const colCommand = "docker service ls";
-//    const command = `docker service ls | grep ${stack}_`;
-
-//    const columns = [];
-//    // {array} the headers of the columns from the docker service ls command
-
-//    try {
-//       const run = await runCommand(colCommand);
-//       const colLine = run.stdout.split("\n").shift();
-
-//       colLine.split(" ").map((part) => {
-//          if (part.length > 0) {
-//             columns.push(part);
-//          }
-//       });
-//    } catch (err) {
-//       console.error("Error getting service columns:", err);
-//       throw err;
-//    }
-
-//    try {
-//       let output = await runCommand(command);
-
-//       const lines = output.stdout.split("\n");
-//       lines.map((line) => {
-//          let serviceHash = {};
-//          let index = 0;
-//          line.split(" ").map((part) => {
-//             if (part.length > 0) {
-//                serviceHash[columns[index]] = part;
-//                index++;
-//             }
-//          });
-//          if (serviceHash["IMAGE"]) {
-//             hashServices[serviceHash["IMAGE"]] = serviceHash;
-//          }
-//       });
-
-//       console.log();
-//       console.log("Found Service Data:");
-//       console.log(hashServices);
-//       console.log();
-//       return hashServices;
-//    } catch (err) {
-//       console.error(err);
-//    }
-// };
-
-const updateImage = async (services) => {
-   if (!services.length) return;
-
+/**
+ * Pull the images
+ * @param {string[]} images images to pull
+ */
+async function updateImage(images) {
+   /** @type {Promise<CommandResponse>[]} */
    const pendings = [];
 
-   services.forEach((e) => {
-      const command = `docker pull ${e} && echo "" && docker image ls | grep "${
+   images.forEach((e) => {
+      const command = `${platform} pull ${e} && echo "" && ${platform} image ls | grep "${
          e.split(":")[0]
       }"`;
 
@@ -154,44 +126,30 @@ const updateImage = async (services) => {
    });
 
    return response;
-};
+}
 
-// const updateConfig = async () => {
-//    const response = await runCommand(
-//       `docker stack deploy -c config-compose.yml${stack}`
-//    );
+/**
+ * update live images
+ */
+async function updateServices() {
+   const command =
+      platform === "docker"
+         ? `docker stack deploy -c docker-compose.yml -c docker-compose.override.yml ${stack}`
+         : `podman compose -f docker-compose.yml -f docker-compose.ovverride.yml -p ${stack} up -d`;
+   return await runCommand(command);
+}
 
-//    await wait(5000);
-
-//    while (
-//       !(
-//          await runCommand(
-//             `docker service logs${stack}_config | tail -1 | grep "... config preparation complete" || true`
-//          )
-//       ).stdout
-//    )
-//       await wait(1000);
-
-//    return response;
-// };
-
-const updateDockerCompose = async (services) => {
-   if (!services.length) throw new Error("There are no Docker services up.");
-
-   const response = await runCommand(
-      `docker stack deploy -c docker-compose.yml -c docker-compose.override.yml${stack}`
-   );
-
-   return response;
-};
-
-const cleanOldImages = async (services) => {
-   if (!services.length) return;
-
+/**
+ * remove old images
+ * @param {string[]} images
+ */
+async function cleanOldImages(images) {
    const pendings = [];
 
-   services.forEach((e) => {
-      const command = `docker rmi $(docker images | grep "${e}" | grep "<none>" | awk '{print $3}') -f | true`;
+   images.forEach((image) => {
+      // discard the tag
+      image = image.split(":")[0];
+      const command = `${platform} rmi $(${platform} images | grep "${image}" | grep "<none>" | awk '{print $3}') -f`;
 
       pendings.push(runCommand(command));
    });
@@ -210,9 +168,15 @@ const cleanOldImages = async (services) => {
    });
 
    return response;
-};
+}
 
-const processHandler = async (processName, callbackFunction, ...parameter) => {
+/**
+ * call a function and log it's response to the console
+ * @param {string} processName Name to log
+ * @param {(...args: any[]) => Promise<CommandResponse>} callbackFunction
+ * @param {...*} parameter any arguments to pass to the process function
+ */
+async function processHandler(processName, callbackFunction, ...parameter) {
    if (!processName)
       throw Error('The parameter "processName" should be "string" type');
 
@@ -229,39 +193,35 @@ const processHandler = async (processName, callbackFunction, ...parameter) => {
    if (response.stderr) console.log(response.stderr);
 
    console.log();
-};
+}
 
-const Do = async () => {
+async function Do() {
    try {
       // const services = await getServices();
-      const listServices = await updateVersion();
+      const images = await updateVersion();
+      if (images.length < 1)
+         throw new Error("We didn't get any images from updateVersion");
 
       // our migration image also needs to be updated:
       let branchMigrate = process.env.AB_MIGRATION_MANAGER_VERSION || "master";
-      // if (listServices.length) {
-      //    let ab = listServices.find((s) => s.indexOf("appbuilder") > -1);
+      // if (images.length) {
+      //    let ab = images.find((s) => s.indexOf("appbuilder") > -1);
       //    if (ab) {
       //       branchMigrate = ab.split(":")[1];
       //       if (!branchMigrate) branchMigrate = "master";
       //    }
       // }
-      listServices.unshift(`digiserve/ab-migration-manager:${branchMigrate}`);
+      images.unshift(`digiserve/ab-migration-manager:${branchMigrate}`);
 
-      await processHandler("Updating Images", updateImage, listServices);
-
-      // await processHandler("Reseting config", updateConfig);
+      await processHandler("Updating Images", updateImage, images);
 
       await processHandler("DB Migrations", dbMigrate, branchMigrate);
 
       await wait(30000);
 
-      await processHandler(
-         "Updating services",
-         updateDockerCompose,
-         listServices
-      );
+      await processHandler("Updating services", updateServices);
 
-      await processHandler("Cleaning old images", cleanOldImages, listServices);
+      await processHandler("Cleaning old images", cleanOldImages, images);
 
       console.log("... done");
       console.log();
@@ -269,6 +229,6 @@ const Do = async () => {
       console.error(error);
       console.error();
    }
-};
+}
 
 Do();
