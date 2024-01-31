@@ -24,22 +24,26 @@ then
 fi
 
 File="docker-compose.yml"
-TestOveride=""
+TestOverride=""
 if [[ -n $Dev ]]
 then
     File="docker-compose.dev.yml"
 fi
-if [[ -n $Test ]]
-then
-    TestOveride="-c ./test/setup/ci-test.overide.yml"
-fi
-nohup node ab_system_monitor.js &> /dev/null &
 if [ "$PLATFORM" = "podman" ]
 then
-	systemctl --user start pod-${STACKNAME}.service
-   Quiet="true"
+   if [[ -n $Test ]]
+   then
+     TestOverride="-f ./test/setup/ci-test.overide.yml"
+   fi
+   podman compose -f $File -f docker-compose.override.yml $TestOverride -p $STACKNAME up -d
+	# systemctl --user start pod-${STACKNAME}.service
 else
-   docker stack deploy -c $File -c docker-compose.override.yml $TestOveride ${STACKNAME}
+   nohup node ab_system_monitor.js &> /dev/null &
+   if [[ -n $Test ]]
+   then
+      TestOverride="-c ./test/setup/ci-test.overide.yml"
+   fi
+   docker stack deploy -c $File -c docker-compose.override.yml $TestOverride $STACKNAME
 fi
 if [[ -z $Quiet ]]
 then

@@ -39,7 +39,7 @@ if (process.argv[2] == "--toFile") {
 var stdout = null;
 if (process.env.PLATFORM === "podman") {
    stdout = shell.exec(
-      `podman ps | awk '/${process.env.STACKNAME}_/ {print $1}'`
+      `podman ps | awk '/${process.env.STACKNAME}/ {print $1}'`
    );
 } else if (os.platform() == "win32") {
    // windows method of gathering the service names:
