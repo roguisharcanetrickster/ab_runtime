@@ -7,11 +7,12 @@
 // Works with docker swarm or podman compose
 //
 require("dotenv").config();
-/** @type {{ meta_version: string, services: Object.<string, string> }} */
+/** @type {{ version: string, services: Object.<string, string> }} */
 const version = require("./version");
 const { exec } = require("child_process");
 const path = require("path");
 const fs = require("fs").promises;
+const migrationContainer = "update_script_db_migrations"; // ref to clean up the migration container
 
 // const cwd = process.cwd();
 
@@ -27,20 +28,20 @@ const platform = process.env.PLATFORM === "podman" ? "podman" : "docker";
  * Helper to wait a given number of milliseconds
  * @param {number} mS milliseconds to wait
  */
-async function wait(mS) {
-   return new Promise((resolve) => {
-      setTimeout(() => {
-         resolve(null);
-      }, mS);
-   });
-}
+// async function wait(mS) {
+//    return new Promise((resolve) => {
+//       setTimeout(() => {
+//          resolve(null);
+//       }, mS);
+//    });
+// }
 
 /**
  * Reads the version from ./version.json and updates env variables.
  * @returns {Promise<string[]>} image names for ab-services with the new tag
  */
 async function updateVersion() {
-   console.log(`Using meta version ${version.meta_version}`);
+   console.log(`Using runtime version ${version.version}`);
    const envPath = path.join(__dirname, ".env");
    let envContent = await fs.readFile(envPath, { encoding: "utf-8" });
    const images = [];
@@ -90,10 +91,25 @@ function runCommand(command) {
  */
 async function dbMigrate(branch) {
    const response = await runCommand(
-      `${platform} run --env-file .env --network=${stack}_default digiserve/ab-migration-manager:${branch} node app.js`
+      `${platform} run --env-file .env --network=${stack}_default --name=${migrationContainer} digiserve/ab-migration-manager:${branch} node app.js`
    );
 
    return response;
+}
+
+/**
+ * stop and remove the migration manager image
+ */
+async function cleanMigrationManager() {
+   return [
+      await runCommand(`${platform} stop ${migrationContainer}`),
+      await runCommand(`${platform} rm ${migrationContainer}`),
+   ].reduce((a, b) => {
+      return {
+         stdout: "",
+         stderr: `${a.stderr}\n${b.stderr}`,
+      };
+   });
 }
 
 /**
@@ -101,29 +117,29 @@ async function dbMigrate(branch) {
  * @param {string[]} images images to pull
  */
 async function updateImage(images) {
-   /** @type {Promise<CommandResponse>[]} */
    const pendings = [];
-
-   images.forEach((e) => {
-      const command = `${platform} pull ${e} && echo "" && ${platform} image ls | grep "${
-         e.split(":")[0]
-      }"`;
-
-      pendings.push(runCommand(command));
-   });
-
-   const results = await Promise.all(pendings);
 
    const response = {
       stdout: "",
       stderr: "",
    };
 
-   results.forEach((e) => {
-      response.stdout = `${response.stdout}${e.stdout}\n`;
+   images.forEach((e) => {
+      const command = `${platform} pull ${e} && echo "" && ${platform} image ls | grep "${
+         e.split(":")[0]
+      }"`;
 
-      if (e.stderr) response.stderr = `${response.stderr}${e.stderr}\n`;
+      pendings.push(
+         runCommand(command)
+            .then((res) => {
+               console.log(res.stdout);
+               if (res.stderr) response.stderr += `${res.stderr}\n`;
+            })
+            .catch((err) => (response.stderr += `${err.toString()}\n`))
+      );
    });
+
+   await Promise.all(pendings);
 
    return response;
 }
@@ -135,7 +151,7 @@ async function updateServices() {
    const command =
       platform === "docker"
          ? `docker stack deploy -c docker-compose.yml -c docker-compose.override.yml ${stack}`
-         : `podman compose -f docker-compose.yml -f docker-compose.ovverride.yml -p ${stack} up -d`;
+         : `podman compose -f docker-compose.yml -f docker-compose.override.yml -p ${stack} up -d`;
    return await runCommand(command);
 }
 
@@ -146,26 +162,34 @@ async function updateServices() {
 async function cleanOldImages(images) {
    const pendings = [];
 
-   images.forEach((image) => {
-      // discard the tag
-      image = image.split(":")[0];
-      const command = `${platform} rmi $(${platform} images | grep "${image}" | grep "<none>" | awk '{print $3}') -f`;
-
-      pendings.push(runCommand(command));
-   });
-
-   const results = await Promise.all(pendings);
-
    const response = {
       stdout: "",
       stderr: "",
    };
 
-   results.forEach((e) => {
-      response.stdout = `${response.stdout}${e.stdout}\n`;
+   images.forEach((image) => {
+      // discard the tag and fomat for regex filter
+      image = image.split(":")[0].replace("/", ".");
+      if (image.includes("ab-migration-manager")) return; // no need to remove it
+      // We need to remove unused images (that still have a tag)
+      // so filter by .Containers == 0 and .Repository includes image name
+      const imagesCmd = `${platform} images --format='table {{.ID}}\\t{{.Containers}}\\t{{.Repository}}\\t'`;
+      const awkCmd = `awk '($2 == 0) && ($3 ~ /${image}/ ) {print $1}'`;
+      const command = `bash -c "${platform} rmi $(${imagesCmd} | ${awkCmd}) -f"`;
 
-      if (e.stderr) response.stderr = `${response.stderr}${e.stderr}\n`;
+      pendings.push(
+         runCommand(command)
+            .then((res) => {
+               console.log(res.stdout);
+            })
+            .catch((err) => {
+               if (!err.message.includes("image name or ID must be specified"))
+                  response.stderr += `${err.toString()}\n`;
+            })
+      );
    });
+
+   await Promise.all(pendings);
 
    return response;
 }
@@ -217,11 +241,11 @@ async function Do() {
 
       await processHandler("DB Migrations", dbMigrate, branchMigrate);
 
-      await wait(30000);
+      await processHandler("Clean up Migration Manager", cleanMigrationManager);
 
       await processHandler("Updating services", updateServices);
 
-      await processHandler("Cleaning old images", cleanOldImages, images);
+      await processHandler("Clean up old images", cleanOldImages, images);
 
       console.log("... done");
       console.log();
