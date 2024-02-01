@@ -37,6 +37,15 @@ const platform = process.env.PLATFORM === "podman" ? "podman" : "docker";
 // }
 
 /**
+ * Ensure the stack is up
+ */
+async function checkUp() {
+   const command = `${platform} ps | awk '/${stack}.api_sails/ { sum += 1} END {print sum}'`;
+   const res = await runCommand(command);
+   return parseInt(res.stdout) > 0;
+}
+
+/**
  * Reads the version from ./version.json and updates env variables.
  * @returns {Promise<string[]>} image names for ab-services with the new tag
  */
@@ -221,6 +230,16 @@ async function processHandler(processName, callbackFunction, ...parameter) {
 
 async function Do() {
    try {
+      // Check the stack is up first
+      const isUp = await checkUp();
+      if (!isUp) {
+         console.log(
+            "This script expects the 'api_sails' service to be running with the stack name '%s'",
+            stack
+         );
+         console.log("We couldn't find it. Try running './UP.sh' first?");
+         return;
+      }
       // const services = await getServices();
       const images = await updateVersion();
       if (images.length < 1)
