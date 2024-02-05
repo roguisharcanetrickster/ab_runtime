@@ -105,6 +105,6 @@ run AppBuilder with (referred to here as `mystack`). This should match the
    ```
 
 ## Podman
-The runtime can be alternatively used with podman. Most scripts of the scripts already support
+The runtime can be alternatively used with podman. Most of the scripts already support
 podman. Make sure the environment variable `PLATFORM` is set to `podman`.
 
