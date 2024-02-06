@@ -29,14 +29,14 @@ if [[ -n $Dev ]]
 then
     File="docker-compose.dev.yml"
 fi
-if [ "$PLATFORM" = "podman" ]
-then
+if [[ -n "$SYSTEMD_SERVICE" && -z $Dev ]]; then
+	systemctl --user start ${SYSTEMD_SERVICE}.service
+elif [ "$PLATFORM" = "podman" ]; then
    if [[ -n $Test ]]
    then
      TestOverride="-f ./test/setup/ci-test.overide.yml"
    fi
    podman compose -f $File -f docker-compose.override.yml $TestOverride -p $STACKNAME up -d
-	# systemctl --user start pod-${STACKNAME}.service
 else
    nohup node ab_system_monitor.js &> /dev/null &
    if [[ -n $Test ]]
