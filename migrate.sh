@@ -10,7 +10,7 @@ set +o allexport
 
 Test=
 # Read flags -t for test
-while getopts dtq name
+while getopts t name
 do
     case $name in
     t)    Test="true";;
