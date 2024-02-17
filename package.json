@@ -5,7 +5,7 @@
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-cypress": "^2.12.1",
-    "eslint-plugin-prettier": "^4.2.1"
+    "eslint-plugin-prettier": "^5.0.0"
   },
   "dependencies": {
     "@digiserve/ab-utils": "^1.6.0",
