@@ -115,13 +115,13 @@ Cypress.Commands.add("RunSQL", (folder, files, fail = true) => {
          `docker cp ./cypress/e2e/${folder}/test_setup/sql/combineSql.sql ${containerId}:/sql/combineSql.sql`,
          {
             log: false,
-         }
+         },
       );
 
       cy.exec(
          /* eslint-disable no-useless-escape*/
          `docker exec ${containerId} bash -c "mysql -u ${user} -p${password} \"appbuilder-admin\" < ./sql/combineSql.sql"`,
-         { failOnNonZeroExit: fail }
+         { failOnNonZeroExit: fail },
       );
       cy.exec(`docker exec ${containerId} bash -c "rm ./sql/combineSql.sql"`, {
          log: false,
