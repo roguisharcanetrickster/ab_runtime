@@ -37,6 +37,46 @@ Cypress.Commands.add("AuthLogin", () => {
    });
 });
 
+Cypress.Commands.add("ModelCreate", (ID, data) => {
+   cy.window().then((win) => {
+      let AB = win.AB;
+      if (AB) {
+         return AB.objectByID(ID).model().create(data);
+      }
+      return null;
+   });
+});
+
+Cypress.Commands.add("ModelDelete", (idModel, idRow) => {
+   cy.window().then((win) => {
+      let AB = win.AB;
+      if (AB) {
+         return AB.objectByID(idModel).model().delete(idRow);
+      }
+      return null;
+   });
+});
+
+Cypress.Commands.add("ModelFind", (idModel, cond) => {
+   cy.window().then((win) => {
+      let AB = win.AB;
+      if (AB) {
+         return AB.objectByID(idModel).model().findAll(cond);
+      }
+      return null;
+   });
+});
+
+Cypress.Commands.add("ModelUpdate", (idModel, idRow, data) => {
+   cy.window().then((win) => {
+      let AB = win.AB;
+      if (AB) {
+         return AB.objectByID(idModel).model().update(idRow, data);
+      }
+      return null;
+   });
+});
+
 Cypress.Commands.add("ResetDB", () => {
    const stack = Cypress.env("STACK");
 
