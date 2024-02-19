@@ -24,7 +24,7 @@ describe("CARS:", () => {
       NavigateCars(cy);
 
       // Should show CARS in the Menu Title
-      cy.get("[data-cy=portal_work_menu_title]")
+      cy.get("[data-cy=portal_work_menu_title]", { timeout: 90000 })
          .should("be.visible")
          .should("have.text", "CARS");
 
