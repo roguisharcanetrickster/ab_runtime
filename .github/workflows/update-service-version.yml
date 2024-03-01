@@ -12,7 +12,8 @@ jobs:
     name: Create a staging branch
     runs-on: ubuntu-latest
     concurrency:
-       group: ci-staging
+       # Wait if another ci-branch is merging/being created
+       group: ci-branch
     outputs:
       branch: ${{ steps.set_branch.outputs.branch }}
     steps:
@@ -20,7 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: master
-          
+
       - run: npm i semver
 
       - id: set_branch
@@ -57,20 +58,39 @@ jobs:
   call-run-cy-test:
     name: Test
     concurrency:
-       group: ci-staging
+       # Cancel any previously started tests
+       group: ci-testing
        cancel-in-progress: true
     needs: [get-branch, update]
     uses: ./.github/workflows/cy-tests.yml
     with:
       ref: ${{ needs.get-branch.outputs.branch }}
 
+  # Make sure no new runs have started before we continue with the merge/release process
+  # Will cancel he current run if any pending runs are detected
+  check-runs:
+    name: Check for new runs
+    needs: [call-run-cy-test]
+    runs-on: ubuntu-latest
+    env:
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Check for in progress runs
+        id: check-runs
+        run: echo "pending=$(gh run list --workflow $GITHUB_WORKFLOW --json status,name -q '.[]|select(.status | IN("in_progress", "queued", "requested", "waiting", "pending"))')" >> "$GITHUB_OUTPUT"
+      - name: Cancel run
+        if: ${{ steps.check-runs.outputs.pending != "" }}
+        run: |
+          gh run cancel ${{ github.run_id }}
+          gh run watch ${{ github.run_id }}
+
   call-bump-version:
     name: Version
     if: ${{ github.event.client_payload.type == 'minor' || github.event.client_payload.type == 'patch' }}
     concurrency:
-       group: ci-staging
-       cancel-in-progress: true
-    needs: [get-branch, call-run-cy-test]
+       # Don't allow new workflows to start until we finish merging
+       group: ci-branch
+    needs: [get-branch, check-runs]
     uses: ./.github/workflows/bump-version.yml
     with:
       ref: ${{ needs.get-branch.outputs.branch }}
@@ -80,8 +100,7 @@ jobs:
   merge-release:
     name: Merge & Release
     concurrency:
-       group: ci-staging
-       cancel-in-progress: false
+       group: ci-branch
     needs: [get-branch, call-bump-version]
     runs-on: ubuntu-latest
     env:

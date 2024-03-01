@@ -72,7 +72,26 @@ eval "$cmd rm $migrationContainer"
 
 echo "Updating Services:"
 if [[ "$cmd" = "podman" ]]; then
+   # Podman compose up won't update running containers so bring down one by one
+   # to update to the image
+   toRestart=()
+   for service in "${!services[@]}";
+   do
+      # Only restart if the image is different
+      id=$(podman ps --format 'table {{.ID}}\t{{.Image}}\t{{.Names}}' | awk -v stack="$STACKNAME" -v service="$service" -v ver="${services[$service]}" '$3 ~ stack && $3 ~ service && $2 !~ ver { print $1 }')
+      if [[ -n $id ]]; then
+         toRestart+=("$id")
+      fi
+   done
+   echo "${id[@]}"
+   for id in $toRestart
+   do
+      echo "$id"
+      podman stop $id
+      podman rm $id
+   done
    podman compose -f docker-compose.yml -f docker-compose.override.yml -p $STACKNAME up -d;
+   # podman stop / rm //compose up
 else
    docker stack deploy -c docker-compose.yml -c docker-compose.override.yml $STACKNAME;
 fi
@@ -103,7 +122,10 @@ do
    fi
 done
 if [[ -n $toRemove ]]; then
-   eval "$cmd rmi $toRemove -f"
+# TODO: still removing some used images (which in podman kills running containers).
+# Disable until can ensure it is safe.
+echo "${toRemove[@]}"
+#   eval "$cmd rmi $toRemove -f"
 fi
 echo "... done"
 exit 0
