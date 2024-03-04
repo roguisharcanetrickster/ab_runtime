@@ -79,7 +79,7 @@ jobs:
         id: check-runs
         run: echo "pending=$(gh run list --workflow $GITHUB_WORKFLOW --json status,name -q '.[]|select(.status | IN("in_progress", "queued", "requested", "waiting", "pending"))')" >> "$GITHUB_OUTPUT"
       - name: Cancel run
-        if: ${{ steps.check-runs.outputs.pending != "" }}
+        if: ${{ steps.check-runs.outputs.pending != '' }}
         run: |
           gh run cancel ${{ github.run_id }}
           gh run watch ${{ github.run_id }}
