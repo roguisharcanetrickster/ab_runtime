@@ -74,10 +74,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       RUN_ID: ${{ github.run_id }}
     steps:
       - name: Check for in progress runs
         id: check-runs
-        run: echo "pending=$(gh run list -R digi-serve/ab_runtime --workflow 'Update Version' --json status,name -q '.[]|select(.status | IN("in_progress", "queued", "requested", "waiting", "pending"))')" >> "$GITHUB_OUTPUT"
+        run: echo "pending=$(gh run list -R digi-serve/ab_runtime --workflow 'Update Version' --json status,name,databaseId -q '.[]|select(.status | IN("in_progress", "queued", "requested", "waiting", "pending")) | .databaseId' | grep -v $RUN_ID)" >> "$GITHUB_OUTPUT"
       - name: Cancel run
         if: ${{ steps.check-runs.outputs.pending != '' }}
         run: |
