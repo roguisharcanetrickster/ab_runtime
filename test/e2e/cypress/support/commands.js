@@ -46,15 +46,16 @@ Cypress.Commands.add("DCSetCursor", (idDC, idRow) => {
          // the DC to be initialized before continuing?
          // maybe something like:
          // let DC = AB.datacollectionByID(idDC);
-         // if (DC.dataStatus == DC.dataStatusFlat.initialized) {
+         // if (DC.dataStatus == DC.dataStatusFlag.initialized) {
          //    return DC.setCursor(idRow);
          // }
-         // return new Promise((done) => {
+         // let settingCursor = new Promise((done) => {
          //    DC.once("initializedData", ()=>{
          //       DC.setCursor(idRow);
          //       done();
          //    })
-         // })
+         // });
+         // return cy.wrap(settingCursor);
       }
       return null;
    });
