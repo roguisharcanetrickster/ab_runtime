@@ -82,8 +82,8 @@ jobs:
       - name: Cancel run
         if: ${{ steps.check-runs.outputs.pending != '' }}
         run: |
-          gh run cancel ${{ github.run_id }}
-          gh run watch ${{ github.run_id }}
+          gh run cancel ${{ github.run_id }} -R digi-serve/ab_runtime
+          gh run watch ${{ github.run_id }} -R digi-serve/ab_runtime
 
   call-bump-version:
     name: Version
