@@ -37,6 +37,30 @@ Cypress.Commands.add("AuthLogin", () => {
    });
 });
 
+Cypress.Commands.add("DCSetCursor", (idDC, idRow) => {
+   cy.window().then((win) => {
+      let AB = win.AB;
+      if (AB) {
+         return AB.datacollectionByID(idDC).setCursor(idRow);
+         // Question: Do you have any Idea how to make this wait for
+         // the DC to be initialized before continuing?
+         // maybe something like:
+         // let DC = AB.datacollectionByID(idDC);
+         // if (DC.dataStatus == DC.dataStatusFlag.initialized) {
+         //    return DC.setCursor(idRow);
+         // }
+         // let settingCursor = new Promise((done) => {
+         //    DC.once("initializedData", ()=>{
+         //       DC.setCursor(idRow);
+         //       done();
+         //    })
+         // });
+         // return cy.wrap(settingCursor);
+      }
+      return null;
+   });
+});
+
 Cypress.Commands.add("ModelCreate", (ID, data) => {
    cy.window().then((win) => {
       let AB = win.AB;
