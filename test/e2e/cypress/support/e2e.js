@@ -18,3 +18,8 @@ import "./commands";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+beforeEach(() => {
+   // block/stub outgoing requests to sentry
+   cy.intercept({ hostname: /sentry\.io/ }, (req) => req.reply("success"));
+});
