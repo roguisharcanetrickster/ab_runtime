@@ -18,3 +18,8 @@ import "./commands";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// Have a system log displayed before each test is run:
+beforeEach(() => {
+   cy.request("POST", "/testlog", { log: Cypress.currentTest.titlePath.join(" : ") });
+});

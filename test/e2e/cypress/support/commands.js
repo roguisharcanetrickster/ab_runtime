@@ -162,6 +162,6 @@ Cypress.Commands.add("TestLog", (log) => {
 });
 
 Cypress.Commands.add("VersionCheck", () => {
-   // Have the running services clear their definitions.
+   // have our Services report back their current versions.
    cy.request("GET", "/versioncheck", { tenant: Cypress.env("TENANT") });
 });
