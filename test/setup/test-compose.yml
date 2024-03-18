@@ -42,18 +42,3 @@ services:
       - type: bind
         source: ./test/e2e/cypress/e2e
         target: /app/imports
-
-  # #appbuilder: (AppBuilder) A multi-tenant aware service to process our AppBuilder requests.
-  # appbuilder:
-  #   ports:
-  #     - "9229:9229"
-  #   # extends:
-  #   #   service: common_config
-
-  #process_manager: (AppBuilder) a micro service to manage our process tasks
-  process_manager:
-    ports:
-      - "9229:9229"
-    # command: [ "node", "--inspect-brk=0.0.0.0:9229", "app.js" ]
-    # extends:
-    #   service: common_config
