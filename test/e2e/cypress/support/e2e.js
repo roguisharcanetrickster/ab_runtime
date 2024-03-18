@@ -19,7 +19,12 @@ import "./commands";
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-// Have a system log displayed before each test is run:
 beforeEach(() => {
-   cy.request("POST", "/testlog", { log: Cypress.currentTest.titlePath.join(" : ") });
+   // block/stub outgoing requests to sentry
+   cy.intercept({ hostname: /sentry\.io/ }, (req) => req.reply("success"));
+
+   // Have a system log displayed before each test is run:
+   cy.request("POST", "/testlog", {
+      log: Cypress.currentTest.titlePath.join(" : "),
+   });
 });

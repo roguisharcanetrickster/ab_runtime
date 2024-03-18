@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Uses the AB Migration Manager to update every tenant DB to the latest
 # schema.
