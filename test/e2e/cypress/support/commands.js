@@ -155,3 +155,13 @@ Cypress.Commands.add("RunSQL", (folder, files, fail = true) => {
       });
    });
 });
+
+Cypress.Commands.add("TestLog", (log) => {
+   // Have the running services clear their definitions.
+   cy.request("POST", "/testlog", { log });
+});
+
+Cypress.Commands.add("VersionCheck", () => {
+   // have our Services report back their current versions.
+   cy.request("GET", "/versioncheck", { tenant: Cypress.env("TENANT") });
+});

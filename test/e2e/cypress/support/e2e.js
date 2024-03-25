@@ -22,4 +22,7 @@ import "./commands";
 beforeEach(() => {
    // block/stub outgoing requests to sentry
    cy.intercept({ hostname: /sentry\.io/ }, (req) => req.reply("success"));
+
+   // Have a system log displayed before each test is run:
+   cy.TestLog(Cypress.currentTest.titlePath.join(" : "));
 });
