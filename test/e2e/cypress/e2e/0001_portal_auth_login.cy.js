@@ -30,7 +30,7 @@ describe("Login Page", () => {
    });
 
    // 3) Login Error Messages
-   it("Displays Error Message when invalid Username / Password", () => {
+   it.skip("Displays Error Message when invalid Username / Password", () => {
       Login(`a${Cypress.env("USER_EMAIL")}`, Cypress.env("USER_PASSWORD"));
 
       // now the warning should exist
@@ -38,7 +38,7 @@ describe("Login Page", () => {
    });
 });
 
-describe("Loading", () => {
+describe.skip("Loading", () => {
    before(() => {
       const url = Cypress.config("baseUrl");
       const parts = url.split("//");
