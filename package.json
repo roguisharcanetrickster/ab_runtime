@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "cypress": "^12.5.1",
+    "cypress": "^13.7.2",
     "env-cmd": "^10.1.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@digiserve/ab-utils": "^1.6.0",
-    "@slack/bolt": "^3.5.0",
+    "@slack/bolt": "^3.17.1",
     "async": "^3.2.4",
     "dotenv": "^16.0.3",
     "nodemon": "^2.0.20",
