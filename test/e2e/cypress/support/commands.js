@@ -61,6 +61,19 @@ Cypress.Commands.add("DCSetCursor", (idDC, idRow) => {
    });
 });
 
+/**
+ * helper for scrolling in a grid
+ * @function gridScroll
+ * @param {string} id webix id of the grid
+ * @param {int} h horizontal scroll in pixels
+ * @param {int=0} v veritcal scroll in pixels
+ */
+Cypress.Commands.add("GridScroll", (id, h, v = 0) => {
+   cy.window().then((win) => {
+      return win.$$(id).scrollTo(h, v);
+   });
+});
+
 Cypress.Commands.add("ModelCreate", (ID, data) => {
    cy.window().then((win) => {
       let AB = win.AB;
