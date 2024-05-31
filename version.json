@@ -9,7 +9,7 @@
       "log_manager": "1.1.5",
       "notification_email": "1.0.9",
       "process_manager": "1.0.49_p10201.c20130",
-      "relay": "1.1.1",
+      "relay": "1.1.2",
       "tenant_manager": "1.1.4",
       "user_manager": "1.1.14_p10301.c20200",
       "web": "1.0.110_d10216.p10700.c20200"
