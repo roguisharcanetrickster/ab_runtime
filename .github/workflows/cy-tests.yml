@@ -33,20 +33,24 @@ jobs:
            run: ./UP.sh -t -q
            working-directory: ./ab
 
-         - run: docker service ls
-
          # These next steps are to save our ablogs to file
          - run: npm install pm2@latest -g
          - name: Save Logs
            run: pm2 start ./logs.js -- --toFile logs/ABServices.log
            working-directory: ./ab
+         
+         - run: docker service ls
 
-        #Run test
+        # Run test
          - name: Wait for AB
-           uses: ifaxity/wait-on-action@v1.1.0
+           if: false
+           uses: ifaxity/wait-on-action@v1
            with:
-              resource: http://localhost:8080
-              timeout: 300000
+             resource: http://localhost:8080
+             timeout: 300000
+         - run: sleep 60s
+
+         - run: docker service ls
 
          - name: Run Cypress Tests
            run: npm run test:e2e:ab-runtime -- --browser chrome
