@@ -26,7 +26,8 @@ BEGIN
         FROM `SITE_PROCESS_INSTANCE`
         WHERE
             `processID` = PROCESS_ID
-                AND (`status` = "created")
+            AND `created_at` >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
+            AND (`status` = "created")
         ORDER BY `created_at` DESC;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
