@@ -18,11 +18,12 @@ BEGIN
     DECLARE USER_FORM_ID varchar(255);
     DECLARE RUN_EXPENSE_REPORT_ID varchar(255);
     DECLARE PENDING_APPROVAL BOOLEAN DEFAULT FALSE;
+    DECLARE PROCESS_UUID VARCHAR(255); -- Declare a variable for UUID
 
     -- Get all pending Processes
     DECLARE done INT DEFAULT FALSE;
     DECLARE ALL_EXPENSE_REPORT_PROCESSES CURSOR FOR 
-        SELECT `context`
+        SELECT `context`, `uuid`
         FROM `SITE_PROCESS_INSTANCE`
         WHERE
             `processID` = PROCESS_ID
@@ -40,7 +41,7 @@ BEGIN
 
     OPEN ALL_EXPENSE_REPORT_PROCESSES;
     read_loop: LOOP
-        FETCH ALL_EXPENSE_REPORT_PROCESSES INTO PROCESS_CONTEXT;
+        FETCH ALL_EXPENSE_REPORT_PROCESSES INTO PROCESS_CONTEXT, PROCESS_UUID;
         IF done THEN
             LEAVE read_loop;
         END IF;
@@ -74,6 +75,10 @@ BEGIN
                 -- Remove the process INBOX
                 DELETE FROM `AB_JOINMN_ProcessForm_USER_users`
                 WHERE `ProcessForm` = USER_FORM_ID;
+
+                UPDATE `SITE_PROCESS_INSTANCE` 
+                SET `status` = "complete"
+                WHERE `uuid` = PROCESS_UUID;
 
                 -- Remove the process INBOX
                 DELETE FROM `site`.`AB_JOINMN_ProcessForm_ROLE_roles`
