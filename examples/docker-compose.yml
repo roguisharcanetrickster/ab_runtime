@@ -5,6 +5,7 @@ volumes:
   files:
   mysql_data:
   redis_data:
+  nginx_logs:
   # clamav:
 
 networks:
@@ -19,6 +20,7 @@ services:
     hostname: web
     volumes:
       - files:/data
+      - nginx_logs:/var/log/nginx/
     depends_on:
       - api_sails
   #/nginx
@@ -92,6 +94,7 @@ services:
         source: ./logs/appbuilder/
         target: /var/log/appbuilder/
       - files:/data
+      - nginx_logs:/var/log/nginx/
     depends_on:
       - redis
     # command: [ "node", "--inspect=0.0.0.0:9229", "app.js" ]
