@@ -66,4 +66,5 @@ jobs:
         with:
           message: Update version ${{ env.NEW_VERSION }}
           tag: v${{ env.NEW_VERSION }}
+          tag_push: '--force'
           default_author: github_actions
