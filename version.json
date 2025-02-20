@@ -5,7 +5,7 @@
       "db": "1.0.0",
       "custom_reports": "1.0.150_p10702",
       "definition_manager": "1.3.2_p10702",
-      "file_processor": "1.1.84_p10700",
+      "file_processor": "1.1.86_p10702",
       "log_manager": "1.1.6",
       "notification_email": "1.0.9",
       "process_manager": "1.0.110_p10702",
