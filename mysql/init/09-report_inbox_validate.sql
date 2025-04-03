@@ -23,7 +23,7 @@ BEGIN
                 `uuid` = f.`process`
             LIMIT 1)
     WHERE
-        (r.`uuid` IS NULL OR r.`Status` != STATUS_QX_APPROVE_VALUE OR u.`USER` != r.`Approver Request`) AND
+        (r.`uuid` IS NULL OR r.`Status` != STATUS_QX_APPROVE_VALUE OR u.`USER` != r.`Expense Report573` /* Moderator column */) AND
         f.`status` = 'pending'
             AND f.`definition` = EXPENSE_REPORT_PROCESS_ID;
 
