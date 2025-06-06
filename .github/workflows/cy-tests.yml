@@ -17,7 +17,7 @@ jobs:
          CYPRESS_RETRIES: 2
       steps:
          - name: Install AppBuilder
-           uses: digi-serve/ab-install-action@v1
+           uses: CruGlobal/ab-install-action@v1
            with:
               folder: ab
               port: 8080
@@ -26,7 +26,7 @@ jobs:
          - name: Check out kitchen-sink tests
            uses: actions/checkout@v3
            with:
-              repository: digi-serve/kitchensink_app
+              repository: CruGlobal/kitchensink_app
               path: ab/test/e2e/cypress/e2e/kitchensink_app
 
          - name: Deploy Stack

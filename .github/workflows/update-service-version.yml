@@ -78,12 +78,12 @@ jobs:
     steps:
       - name: Check for in progress runs
         id: check-runs
-        run: echo "pending=$(gh run list -R digi-serve/ab_runtime --workflow 'Update Version' --json status,name,databaseId -q '.[]|select(.status | IN("in_progress", "queued", "requested", "waiting", "pending")) | .databaseId' | grep -v $RUN_ID)" >> "$GITHUB_OUTPUT"
+        run: echo "pending=$(gh run list -R CruGlobal/ab_runtime --workflow 'Update Version' --json status,name,databaseId -q '.[]|select(.status | IN("in_progress", "queued", "requested", "waiting", "pending")) | .databaseId' | grep -v $RUN_ID)" >> "$GITHUB_OUTPUT"
       - name: Cancel run
         if: ${{ steps.check-runs.outputs.pending != '' }}
         run: |
-          gh run cancel ${{ github.run_id }} -R digi-serve/ab_runtime
-          gh run watch ${{ github.run_id }} -R digi-serve/ab_runtime
+          gh run cancel ${{ github.run_id }} -R CruGlobal/ab_runtime
+          gh run watch ${{ github.run_id }} -R CruGlobal/ab_runtime
 
   call-bump-version:
     name: Version

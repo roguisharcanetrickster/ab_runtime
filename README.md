@@ -1,10 +1,10 @@
-[![GitHub release](https://img.shields.io/github/downloads-pre/digi-serve/ab_runtime/latest/total?label=Version)](https://github.com/digi-serve/ab_runtime/releases)
+[![GitHub release](https://img.shields.io/github/downloads-pre/CruGlobal/ab_runtime/latest/total?label=Version)](https://github.com/CruGlobal/ab_runtime/releases)
 
 
 The server side runtime for our AppBuilder project.
 
 ## Installation
-Use [ab-cli](https://github.com/digi-serve/ab-cli) tool.
+Use [ab-cli](https://github.com/CruGlobal/ab-cli) tool.
 
 ## Starting
 Run `./UP.sh` to bring up the Docker Stack. Options:
