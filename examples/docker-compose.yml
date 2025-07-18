@@ -1,6 +1,4 @@
 # Note: If using ab-cli installer this file will get overwritten
-version: "3.9"
-
 volumes:
   files:
   mysql_data:
