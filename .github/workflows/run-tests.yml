@@ -2,6 +2,8 @@ name: Run E2E Tests
 on:
   pull_request:
     branches: [ master ]
+  push:
+    branches: [ master ]
 
 jobs:
   call-run-cy-test:
